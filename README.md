@@ -6,10 +6,16 @@ This repository includes comprehensive tools and documentation for managing bran
 
 ## 📚 Documentation
 
+> 📋 **Looking for something specific?** Check the [Complete Documentation Index](INDEX.md)
+
+- **[Getting Started](GETTING_STARTED.md)** - 5-minute introduction for new users
 - **[Branching Strategy](BRANCHING_STRATEGY.md)** - Complete guide on creating and managing branches
+- **[Workflow Guide](WORKFLOW_GUIDE.md)** - Step-by-step workflows for common tasks
 - **[Conflict Resolution](CONFLICT_RESOLUTION.md)** - Step-by-step guide for resolving merge conflicts
 - **[Feature Flags](FEATURE_FLAGS.md)** - Implementation guide for feature flag system
 - **[Safe Merge Guide](SAFE_MERGE_GUIDE.md)** - Best practices for safe merging
+- **[Branching Diagram](BRANCHING_DIAGRAM.md)** - Visual diagrams of branching strategies
+- **[Quick Reference](QUICK_REFERENCE.md)** - Command cheat sheet
 
 ## 🛠️ Helper Scripts
 
