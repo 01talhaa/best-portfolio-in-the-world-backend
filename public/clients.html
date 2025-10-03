@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clients API Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #16a085 0%, #1abc9c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
+        .response-area {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .method-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .method-get { background: #d4edda; color: #155724; }
+        .method-post { background: #cce5ff; color: #004085; }
+        .method-put { background: #fff3cd; color: #856404; }
+        .method-delete { background: #f8d7da; color: #721c24; }
+        
+        .token-input {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Clients API Testing</h1>
+            <p>Test client management operations</p>
+        </div>
+        
+        <div class="nav">
+            <a href="index.html">← Back to Dashboard</a>
+        </div>
+        
+        <div class="content">
+            <!-- Auth Token Input -->
+            <div class="token-input">
+                <label for="authToken">Authorization Token (required for protected routes):</label>
+                <input type="text" id="authToken" placeholder="Enter JWT token from login" style="margin-top: 10px;">
+            </div>
+            
+            <!-- Get All Clients -->
+            <div class="test-section">
+                <h3>Get All Clients</h3>
+                <span class="method-tag method-get">GET /api/v1/clients</span>
+                
+                <button id="getAllClientsBtn" class="btn">Get All Clients</button>
+                <button id="clearGetAllBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="getAllResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Create Client -->
+            <div class="test-section">
+                <h3>Create Client</h3>
+                <span class="method-tag method-post">POST /api/v1/clients</span>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Company Name:</label>
+                        <input type="text" id="createCompany" value="TechCorp Solutions">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Person:</label>
+                        <input type="text" id="createContact" value="John Smith">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="createEmail" value="john@techcorp.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone:</label>
+                        <input type="text" id="createPhone" value="+1234567890">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Industry:</label>
+                        <select id="createIndustry">
+                            <option value="Technology" selected>Technology</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Education">Education</option>
+                            <option value="E-commerce">E-commerce</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Real Estate">Real Estate</option>
+                            <option value="Non-profit">Non-profit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Company Size:</label>
+                        <select id="createSize">
+                            <option value="Startup">Startup (1-10)</option>
+                            <option value="Small" selected>Small (11-50)</option>
+                            <option value="Medium">Medium (51-200)</option>
+                            <option value="Large">Large (201-1000)</option>
+                            <option value="Enterprise">Enterprise (1000+)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Address:</label>
+                    <textarea id="createAddress">123 Tech Street, Silicon Valley, CA 94000</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Website:</label>
+                    <input type="url" id="createWebsite" value="https://techcorp.com">
+                </div>
+                
+                <button id="createClientBtn" class="btn">Create Client</button>
+                <button id="clearCreateBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="createResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Get Client by ID -->
+            <div class="test-section">
+                <h3>Get Client by ID</h3>
+                <span class="method-tag method-get">GET /api/v1/clients/:id</span>
+                
+                <div class="form-group">
+                    <label>Client ID:</label>
+                    <input type="text" id="getClientId" placeholder="Enter client ID">
+                </div>
+                
+                <button id="getClientByIdBtn" class="btn">Get Client</button>
+                <button id="clearGetByIdBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="getByIdResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Update Client -->
+            <div class="test-section">
+                <h3>Update Client</h3>
+                <span class="method-tag method-put">PUT /api/v1/clients/:id</span>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Client ID:</label>
+                        <input type="text" id="updateClientId" placeholder="Enter client ID">
+                    </div>
+                    <div class="form-group">
+                        <label>Company Name:</label>
+                        <input type="text" id="updateCompany" value="TechCorp Solutions Inc.">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Contact Person:</label>
+                        <input type="text" id="updateContact" value="John Smith (CEO)">
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="updateEmail" value="ceo@techcorp.com">
+                    </div>
+                </div>
+                
+                <button id="updateClientBtn" class="btn">Update Client</button>
+                <button id="clearUpdateBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="updateResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Delete Client -->
+            <div class="test-section">
+                <h3>Delete Client</h3>
+                <span class="method-tag method-delete">DELETE /api/v1/clients/:id</span>
+                
+                <div class="form-group">
+                    <label>Client ID:</label>
+                    <input type="text" id="deleteClientId" placeholder="Enter client ID">
+                </div>
+                
+                <button id="deleteClientBtn" class="btn btn-danger">Delete Client</button>
+                <button id="clearDeleteBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="deleteResponse" class="response-area" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000/api/v1';
+
+        function getAuthHeaders() {
+            const token = document.getElementById('authToken').value;
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        async function getAllClients() {
+            try {
+                const response = await fetch(`${BASE_URL}/clients`, {
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('getAllResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('getAllResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function createClient() {
+            const data = {
+                name: document.getElementById('createCompany').value,
+                description: document.getElementById('createAddress').value, // Using address as description for now
+                industry: document.getElementById('createIndustry').value,
+                website: document.getElementById('createWebsite').value,
+                contactPerson: {
+                    name: document.getElementById('createContact').value,
+                    email: document.getElementById('createEmail').value,
+                    phone: document.getElementById('createPhone').value
+                }
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/clients`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                displayResponse('createResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('createResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function getClientById() {
+            const id = document.getElementById('getClientId').value;
+            if (!id) {
+                alert('Please enter a client ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/clients/${id}`, {
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('getByIdResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('getByIdResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function updateClient() {
+            const id = document.getElementById('updateClientId').value;
+            if (!id) {
+                alert('Please enter a client ID');
+                return;
+            }
+
+            const data = {
+                name: document.getElementById('updateCompany').value,
+                contactPerson: {
+                    name: document.getElementById('updateContact').value,
+                    email: document.getElementById('updateEmail').value
+                }
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/clients/${id}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                displayResponse('updateResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('updateResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+
+        async function deleteClient() {
+            const id = document.getElementById('deleteClientId').value;
+            if (!id) {
+                alert('Please enter a client ID');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this client?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/clients/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('deleteResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('deleteResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        function displayResponse(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        function clearResponse(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+
+        // Initialize event listeners when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Clients page loaded, setting up event listeners...');
+            
+            // Get All Clients
+            const getAllBtn = document.getElementById('getAllClientsBtn');
+            if (getAllBtn) {
+                getAllBtn.addEventListener('click', getAllClients);
+            }
+            
+            // Create Client
+            const createBtn = document.getElementById('createClientBtn');
+            if (createBtn) {
+                createBtn.addEventListener('click', createClient);
+            }
+            
+            // Get Client By ID
+            const getByIdBtn = document.getElementById('getClientByIdBtn');
+            if (getByIdBtn) {
+                getByIdBtn.addEventListener('click', getClientById);
+            }
+            
+            // Update Client
+            const updateBtn = document.getElementById('updateClientBtn');
+            if (updateBtn) {
+                updateBtn.addEventListener('click', updateClient);
+            }
+            
+            // Delete Client
+            const deleteBtn = document.getElementById('deleteClientBtn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', deleteClient);
+            }
+            
+            // Clear buttons
+            document.getElementById('clearGetAllBtn')?.addEventListener('click', () => clearResponse('getAllResponse'));
+            document.getElementById('clearCreateBtn')?.addEventListener('click', () => clearResponse('createResponse'));
+            document.getElementById('clearGetByIdBtn')?.addEventListener('click', () => clearResponse('getByIdResponse'));
+            document.getElementById('clearUpdateBtn')?.addEventListener('click', () => clearResponse('updateResponse'));
+            document.getElementById('clearDeleteBtn')?.addEventListener('click', () => clearResponse('deleteResponse'));
+            
+            console.log('Event listeners set up successfully');
+        });
+    </script>
+</body>
+</html>

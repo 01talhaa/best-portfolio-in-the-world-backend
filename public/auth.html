@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication API Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        
+        .response-area {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .method-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .method-post { background: #cce5ff; color: #004085; }
+        .method-get { background: #d4edda; color: #155724; }
+        
+        .token-display {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .token-display h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        .token-text {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Authentication API Testing</h1>
+            <p>Test user registration, login, logout, and token management</p>
+        </div>
+        
+        <div class="nav">
+            <a href="index.html">← Back to Dashboard</a>
+        </div>
+        
+        <div class="content">
+            <!-- User Registration -->
+            <div class="test-section">
+                <h3>User Registration</h3>
+                <span class="method-tag method-post">POST /api/v1/auth/register</span>
+                
+                <div class="form-group">
+                    <label>Username:</label>
+                    <input type="text" id="regUsername" placeholder="Enter username" value="testuser123">
+                </div>
+                
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="regEmail" placeholder="Enter email" value="test@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="regPassword" placeholder="Enter password" value="password123">
+                </div>
+                
+                <div class="form-group">
+                    <label>Role:</label>
+                    <select id="regRole">
+                        <option value="Admin">Admin</option>
+                        <option value="Editor">Editor</option>
+                        <option value="Viewer" selected>Viewer</option>
+                        <option value="Manager">Manager</option>
+                    </select>
+                </div>
+                
+                <button id="registerBtn" class="action-btn">Register</button>
+                <button id="testJSBtn1" class="action-btn" style="background-color: #28a745;">Test JavaScript</button>
+                <button onclick="alert('Basic onclick works!')" class="action-btn" style="background-color: #ff6b6b;">Test Basic Click</button>
+                </div>
+                <button id="testJSBtn2" class="btn">Test JS</button>
+                <button id="clearRegBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="regResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- User Login -->
+            <div class="test-section">
+                <h3>User Login</h3>
+                <span class="method-tag method-post">POST /api/v1/auth/login</span>
+                
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="loginEmail" placeholder="Enter email" value="test@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" value="password123">
+                </div>
+                
+                <button id="loginBtn" class="btn">Login</button>
+                <button id="clearLoginBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="loginResponse" class="response-area" style="display: none;"></div>
+                
+                <div id="tokenDisplay" class="token-display" style="display: none;">
+                    <h4>Access Token (Copy for protected routes):</h4>
+                    <div id="tokenText" class="token-text"></div>
+                </div>
+            </div>
+            
+            <!-- Token Refresh -->
+            <div class="test-section">
+                <h3>Refresh Token</h3>
+                <span class="method-tag method-post">POST /api/v1/auth/refresh-token</span>
+                
+                <p>Uses stored refresh token from login response</p>
+                
+                <button id="refreshBtn" class="btn">Refresh Token</button>
+                <button id="clearRefreshBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="refreshResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- User Logout -->
+            <div class="test-section">
+                <h3>User Logout</h3>
+                <span class="method-tag method-post">POST /api/v1/auth/logout</span>
+                
+                <button id="logoutBtn" class="btn">Logout</button>
+                <button id="clearLogoutBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="logoutResponse" class="response-area" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🚀 Auth page JavaScript loaded');
+        alert('🎯 JavaScript is executing immediately!');
+        
+        const BASE_URL = 'http://localhost:5000/api/v1';
+        let accessToken = '';
+        let refreshTokenValue = '';
+
+        // Test function to verify JavaScript is working
+        function testJS() {
+            console.log('🧪 testJS function called');
+            alert('🎉 JavaScript is working! BASE_URL: ' + BASE_URL);
+        }
+
+        async function registerUser() {
+            console.log('Register function called');
+            
+            try {
+                const data = {
+                    username: document.getElementById('regUsername').value,
+                    email: document.getElementById('regEmail').value,
+                    password: document.getElementById('regPassword').value,
+                    role: document.getElementById('regRole').value
+                };
+
+                console.log('Sending registration data:', data);
+                console.log('URL:', `${BASE_URL}/auth/register`);
+
+                const response = await fetch(`${BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Response data:', result);
+                
+                displayResponse('regResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+
+                if (result.success) {
+                    // Auto-fill login form with registered credentials
+                    document.getElementById('loginEmail').value = data.email;
+                    document.getElementById('loginPassword').value = data.password;
+                    alert('Registration successful! Login form has been auto-filled.');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                displayResponse('regResponse', {
+                    error: error.message,
+                    stack: error.stack
+                });
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function loginUser() {
+            const data = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                displayResponse('loginResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+
+                if (result.success && result.data) {
+                    accessToken = result.data.accessToken;
+                    refreshTokenValue = result.data.refreshToken;
+                    
+                    // Display token
+                    document.getElementById('tokenDisplay').style.display = 'block';
+                    document.getElementById('tokenText').textContent = accessToken;
+                }
+            } catch (error) {
+                displayResponse('loginResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function refreshToken() {
+            if (!refreshTokenValue) {
+                displayResponse('refreshResponse', {
+                    error: 'No refresh token available. Please login first.'
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/auth/refresh-token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        refreshToken: refreshTokenValue
+                    })
+                });
+
+                const result = await response.json();
+                displayResponse('refreshResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+
+                if (result.success && result.data) {
+                    accessToken = result.data.accessToken;
+                    document.getElementById('tokenText').textContent = accessToken;
+                }
+            } catch (error) {
+                displayResponse('refreshResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function logoutUser() {
+            try {
+                const response = await fetch(`${BASE_URL}/auth/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                });
+
+                const result = await response.json();
+                displayResponse('logoutResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+
+                if (result.success) {
+                    accessToken = '';
+                    refreshTokenValue = '';
+                    document.getElementById('tokenDisplay').style.display = 'none';
+                }
+            } catch (error) {
+                displayResponse('logoutResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        function displayResponse(elementId, data) {
+            console.log('Displaying response for:', elementId, data);
+            const element = document.getElementById(elementId);
+            if (!element) {
+                console.error('Element not found:', elementId);
+                alert('Error: Response element not found!');
+                return;
+            }
+            element.style.display = 'block';
+            element.innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        function clearResponse(elementId) {
+            console.log('Clearing response for:', elementId);
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.style.display = 'none';
+            }
+        }
+
+        // Generate random credentials on page load
+        window.onload = function() {
+            console.log('Page loaded, initializing...');
+            const timestamp = Date.now();
+            document.getElementById('regUsername').value = `testuser${timestamp}`;
+            document.getElementById('regEmail').value = `test${timestamp}@example.com`;
+            console.log('Credentials generated:', {
+                username: document.getElementById('regUsername').value,
+                email: document.getElementById('regEmail').value
+            });
+        };
+
+        // Add event listener for when DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded');
+            console.log('Available elements:', {
+                regUsername: !!document.getElementById('regUsername'),
+                regEmail: !!document.getElementById('regEmail'),
+                regPassword: !!document.getElementById('regPassword'),
+                regRole: !!document.getElementById('regRole')
+            });
+            
+            // Show an alert to confirm JavaScript is running
+            alert('JavaScript is loading! Check the console for details.');
+            
+            // Add event listeners for all buttons
+            const registerBtn = document.getElementById('registerBtn');
+            const testJSBtn1 = document.getElementById('testJSBtn1');
+            const testJSBtn2 = document.getElementById('testJSBtn2');
+            const clearRegBtn = document.getElementById('clearRegBtn');
+            const loginBtn = document.getElementById('loginBtn');
+            const clearLoginBtn = document.getElementById('clearLoginBtn');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const clearRefreshBtn = document.getElementById('clearRefreshBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const clearLogoutBtn = document.getElementById('clearLogoutBtn');
+            
+            console.log('Button elements found:', {
+                registerBtn: !!registerBtn,
+                testJSBtn1: !!testJSBtn1,
+                testJSBtn2: !!testJSBtn2,
+                clearRegBtn: !!clearRegBtn,
+                loginBtn: !!loginBtn,
+                clearLoginBtn: !!clearLoginBtn,
+                refreshBtn: !!refreshBtn,
+                clearRefreshBtn: !!clearRefreshBtn,
+                logoutBtn: !!logoutBtn,
+                clearLogoutBtn: !!clearLogoutBtn
+            });
+            
+            if (registerBtn) {
+                registerBtn.addEventListener('click', registerUser);
+                console.log('Register button listener added');
+            }
+            if (testJSBtn1) {
+                testJSBtn1.addEventListener('click', testJS);
+                console.log('Test JS button 1 listener added');
+            }
+            if (testJSBtn2) {
+                testJSBtn2.addEventListener('click', testJS);
+                console.log('Test JS button 2 listener added');
+            }
+            if (clearRegBtn) {
+                clearRegBtn.addEventListener('click', () => clearResponse('regResponse'));
+                console.log('Clear register button listener added');
+            }
+            if (loginBtn) {
+                loginBtn.addEventListener('click', loginUser);
+                console.log('Login button listener added');
+            }
+            if (clearLoginBtn) {
+                clearLoginBtn.addEventListener('click', () => clearResponse('loginResponse'));
+                console.log('Clear login button listener added');
+            }
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', refreshToken);
+                console.log('Refresh button listener added');
+            }
+            if (clearRefreshBtn) {
+                clearRefreshBtn.addEventListener('click', () => clearResponse('refreshResponse'));
+                console.log('Clear refresh button listener added');
+            }
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', logoutUser);
+                console.log('Logout button listener added');
+            }
+            if (clearLogoutBtn) {
+                clearLogoutBtn.addEventListener('click', () => clearResponse('logoutResponse'));
+                console.log('Clear logout button listener added');
+            }
+            
+            console.log('Event listeners setup completed');
+        });
+    </script>
+</body>
+</html>

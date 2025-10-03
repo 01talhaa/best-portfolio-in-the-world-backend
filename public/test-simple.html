@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple JavaScript Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a202c;
+            color: white;
+        }
+        .btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .response {
+            background: #2d3748;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple JavaScript Test</h1>
+    
+    <button id="testBtn" class="btn">Test JavaScript</button>
+    <button id="apiBtn" class="btn">Test API Call</button>
+    
+    <div id="result" class="response">Click a button to test...</div>
+    
+    <script>
+        const BASE_URL = 'http://localhost:5000/api/v1';
+        
+        console.log('Script loaded');
+        
+        function testFunction() {
+            console.log('Test function called!');
+            document.getElementById('result').textContent = 'JavaScript is working! Time: ' + new Date().toLocaleTimeString();
+            alert('JavaScript is working!');
+        }
+        
+        async function testAPI() {
+            console.log('Testing API call...');
+            document.getElementById('result').textContent = 'Making API call...';
+            
+            try {
+                const response = await fetch(`${BASE_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'testuser' + Date.now(),
+                        email: 'test' + Date.now() + '@example.com',
+                        password: 'password123',
+                        role: 'Admin'
+                    })
+                });
+                
+                const result = await response.json();
+                document.getElementById('result').textContent = JSON.stringify(result, null, 2);
+                console.log('API Response:', result);
+            } catch (error) {
+                document.getElementById('result').textContent = 'Error: ' + error.message;
+                console.error('API Error:', error);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            
+            const testBtn = document.getElementById('testBtn');
+            const apiBtn = document.getElementById('apiBtn');
+            
+            if (testBtn) {
+                testBtn.addEventListener('click', testFunction);
+                console.log('Test button listener added');
+            }
+            
+            if (apiBtn) {
+                apiBtn.addEventListener('click', testAPI);
+                console.log('API button listener added');
+            }
+            
+            console.log('Setup complete');
+        });
+        
+        window.onload = function() {
+            console.log('Window loaded');
+        };
+    </script>
+</body>
+</html>

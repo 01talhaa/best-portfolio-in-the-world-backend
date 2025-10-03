@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload API Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group input[type="file"] {
+            padding: 8px;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        
+        .response-area {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .method-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .method-post { background: #cce5ff; color: #004085; }
+        
+        .token-input {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .upload-area {
+            border: 2px dashed #e9ecef;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            background: #fafafa;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .upload-area h4 {
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .file-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #2196f3;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📁 File Upload API Testing</h1>
+            <p>Test file upload capabilities for various content types</p>
+        </div>
+        
+        <div class="nav">
+            <a href="index.html">← Back to Dashboard</a>
+        </div>
+        
+        <div class="content">
+            <!-- Auth Token Input -->
+            <div class="token-input">
+                <label for="authToken">Authorization Token (required for protected routes):</label>
+                <input type="text" id="authToken" placeholder="Enter JWT token from login" style="margin-top: 10px;">
+            </div>
+            
+            <!-- Profile Image Upload -->
+            <div class="test-section">
+                <h3>Profile Image Upload</h3>
+                <span class="method-tag method-post">POST /api/v1/upload/profile</span>
+                
+                <div class="upload-area" id="profileUploadArea">
+                    <h4>📸 Upload Profile Image</h4>
+                    <p>Drag and drop an image here or click to select</p>
+                    <input type="file" id="profileFile" accept="image/*" style="display: none;">
+                </div>
+                
+                <div id="profileFileInfo" class="file-info">
+                    <h4>Selected File:</h4>
+                    <div id="profileFileName"></div>
+                    <img id="profilePreview" class="preview-image" style="display: none;">
+                </div>
+                
+                <button id="profileUploadBtn" class="btn">Upload Profile Image</button>
+                <button id="profileClearBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="profileLoading" class="loading">
+                    <div class="spinner"></div>
+                    <span>Uploading...</span>
+                </div>
+                
+                <div id="profileResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Project Image Upload -->
+            <div class="test-section">
+                <h3>Project Image Upload</h3>
+                <span class="method-tag method-post">POST /api/v1/upload/project</span>
+                
+                <div class="upload-area" id="projectUploadArea">
+                    <h4>🖼️ Upload Project Image</h4>
+                    <p>Drag and drop an image here or click to select</p>
+                    <input type="file" id="projectFile" accept="image/*" style="display: none;">
+                </div>
+                
+                <div id="projectFileInfo" class="file-info">
+                    <h4>Selected File:</h4>
+                    <div id="projectFileName"></div>
+                    <img id="projectPreview" class="preview-image" style="display: none;">
+                </div>
+                
+                <!-- Entity Association Fields -->
+                <div class="form-group">
+                    <label for="projectEntityType">Entity Type:</label>
+                    <select id="projectEntityType">
+                        <option value="">None (standalone upload)</option>
+                        <option value="project">Project</option>
+                        <option value="team-member">Team Member</option>
+                        <option value="blog">Blog</option>
+                        <option value="service">Service</option>
+                        <option value="client">Client</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="projectEntityId">Entity ID:</label>
+                    <input type="text" id="projectEntityId" placeholder="Enter entity ID (e.g., project/team member/blog ID)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="projectDescription">Description (optional):</label>
+                    <input type="text" id="projectDescription" placeholder="Brief description of this upload">
+                </div>
+                
+                <button id="projectUploadBtn" class="btn">Upload Project Image</button>
+                <button id="projectClearBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="projectLoading" class="loading">
+                    <div class="spinner"></div>
+                    <span>Uploading...</span>
+                </div>
+                
+                <div id="projectResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Blog Image Upload -->
+            <div class="test-section">
+                <h3>Blog Image Upload</h3>
+                <span class="method-tag method-post">POST /api/v1/upload/blog</span>
+                
+                <div class="upload-area" id="blogUploadArea">
+                    <h4>📝 Upload Blog Image</h4>
+                    <p>Drag and drop an image here or click to select</p>
+                    <input type="file" id="blogFile" accept="image/*" style="display: none;">
+                </div>
+                
+                <div id="blogFileInfo" class="file-info">
+                    <h4>Selected File:</h4>
+                    <div id="blogFileName"></div>
+                    <img id="blogPreview" class="preview-image" style="display: none;">
+                </div>
+                
+                <button id="blogUploadBtn" class="btn">Upload Blog Image</button>
+                <button id="blogClearBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="blogLoading" class="loading">
+                    <div class="spinner"></div>
+                    <span>Uploading...</span>
+                </div>
+                
+                <div id="blogResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Service Image Upload -->
+            <div class="test-section">
+                <h3>Service Image Upload</h3>
+                <span class="method-tag method-post">POST /api/v1/upload/service</span>
+                
+                <div class="upload-area" id="serviceUploadArea">
+                    <h4>⚙️ Upload Service Image</h4>
+                    <p>Drag and drop an image here or click to select</p>
+                    <input type="file" id="serviceFile" accept="image/*" style="display: none;">
+                </div>
+                
+                <div id="serviceFileInfo" class="file-info">
+                    <h4>Selected File:</h4>
+                    <div id="serviceFileName"></div>
+                    <img id="servicePreview" class="preview-image" style="display: none;">
+                </div>
+                
+                <button id="serviceUploadBtn" class="btn">Upload Service Image</button>
+                <button id="serviceClearBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="serviceLoading" class="loading">
+                    <div class="spinner"></div>
+                    <span>Uploading...</span>
+                </div>
+                
+                <div id="serviceResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Document Upload -->
+            <div class="test-section">
+                <h3>Document Upload</h3>
+                <span class="method-tag method-post">POST /api/v1/upload/document</span>
+                
+                <div class="upload-area" id="documentUploadArea">
+                    <h4>📄 Upload Document</h4>
+                    <p>Drag and drop a document here or click to select</p>
+                    <input type="file" id="documentFile" accept=".pdf,.doc,.docx,.txt,.md" style="display: none;">
+                </div>
+                
+                <div id="documentFileInfo" class="file-info">
+                    <h4>Selected File:</h4>
+                    <div id="documentFileName"></div>
+                </div>
+                
+                <button id="documentUploadBtn" class="btn">Upload Document</button>
+                <button id="documentClearBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="documentLoading" class="loading">
+                    <div class="spinner"></div>
+                    <span>Uploading...</span>
+                </div>
+                
+                <div id="documentResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- General Upload -->
+            <div class="test-section">
+                <h3>General File Upload</h3>
+                <span class="method-tag method-post">POST /api/v1/upload/general</span>
+                
+                <div class="upload-area" id="generalUploadArea">
+                    <h4>📎 Upload Any File</h4>
+                    <p>Drag and drop any file here or click to select</p>
+                    <input type="file" id="generalFile" style="display: none;">
+                </div>
+                
+                <div id="generalFileInfo" class="file-info">
+                    <h4>Selected File:</h4>
+                    <div id="generalFileName"></div>
+                </div>
+                
+                <!-- Entity Association Fields -->
+                <div class="form-group">
+                    <label for="generalEntityType">Entity Type:</label>
+                    <select id="generalEntityType">
+                        <option value="">None (standalone upload)</option>
+                        <option value="project">Project</option>
+                        <option value="team-member">Team Member</option>
+                        <option value="blog">Blog</option>
+                        <option value="service">Service</option>
+                        <option value="client">Client</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="generalEntityId">Entity ID:</label>
+                    <input type="text" id="generalEntityId" placeholder="Enter entity ID (e.g., project/team member/blog ID)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="generalDescription">Description (optional):</label>
+                    <input type="text" id="generalDescription" placeholder="Brief description of this upload">
+                </div>
+                
+                <button id="generalUploadBtn" class="btn">Upload File</button>
+                <button id="generalClearBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="generalLoading" class="loading">
+                    <div class="spinner"></div>
+                    <span>Uploading...</span>
+                </div>
+                
+                <div id="generalResponse" class="response-area" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000/api/v1';
+
+        function getAuthHeaders() {
+            const token = document.getElementById('authToken').value;
+            return {
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        // Setup upload areas
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadTypes = ['profile', 'project', 'blog', 'service', 'document', 'general'];
+            
+            uploadTypes.forEach(type => {
+                setupUploadArea(type);
+            });
+        });
+
+        function setupUploadArea(type) {
+            const uploadArea = document.getElementById(`${type}UploadArea`);
+            const fileInput = document.getElementById(`${type}File`);
+            
+            // Click to upload
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            // File selection
+            fileInput.addEventListener('change', (e) => {
+                handleFileSelect(type, e.target.files[0]);
+            });
+            
+            // Drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                handleFileSelect(type, e.dataTransfer.files[0]);
+            });
+        }
+
+        function handleFileSelect(type, file) {
+            if (!file) return;
+            
+            const fileInfo = document.getElementById(`${type}FileInfo`);
+            const fileName = document.getElementById(`${type}FileName`);
+            
+            fileName.innerHTML = `
+                <strong>Name:</strong> ${file.name}<br>
+                <strong>Size:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB<br>
+                <strong>Type:</strong> ${file.type}
+            `;
+            
+            fileInfo.style.display = 'block';
+            
+            // Show image preview for image files
+            if (file.type.startsWith('image/')) {
+                const preview = document.getElementById(`${type}Preview`);
+                if (preview) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        async function uploadFile(type) {
+            console.log('Upload function called for type:', type);
+            const fileInput = document.getElementById(`${type}File`);
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Add entity association data if provided
+            const entityTypeSelect = document.getElementById(`${type}EntityType`);
+            const entityIdInput = document.getElementById(`${type}EntityId`);
+            const descriptionInput = document.getElementById(`${type}Description`);
+            
+            if (entityTypeSelect && entityTypeSelect.value) {
+                formData.append('entityType', entityTypeSelect.value);
+            }
+            
+            if (entityIdInput && entityIdInput.value.trim()) {
+                formData.append('entityId', entityIdInput.value.trim());
+            }
+            
+            if (descriptionInput && descriptionInput.value.trim()) {
+                formData.append('description', descriptionInput.value.trim());
+            }
+            
+            showLoading(`${type}Loading`);
+            
+            try {
+                // Use single upload endpoint for all types
+                const response = await fetch(`${BASE_URL}/upload/single`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: formData
+                });
+
+                const result = await response.json();
+                console.log('Upload response:', result);
+                
+                hideLoading(`${type}Loading`);
+                
+                displayResponse(`${type}Response`, {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+                
+                // Show preview if upload was successful
+                if (result.success && result.data && result.data.url) {
+                    showPreview(type, result.data.url, file.type);
+                }
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                hideLoading(`${type}Loading`);
+                displayResponse(`${type}Response`, {
+                    error: error.message
+                });
+            }
+        }
+
+        function clearUpload(type) {
+            const fileInput = document.getElementById(`${type}File`);
+            const fileInfo = document.getElementById(`${type}FileInfo`);
+            const preview = document.getElementById(`${type}Preview`);
+            
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+            
+            if (preview) {
+                preview.style.display = 'none';
+                preview.src = '';
+            }
+            
+            clearResponse(`${type}Response`);
+        }
+
+        function showLoading(elementId) {
+            document.getElementById(elementId).classList.add('show');
+        }
+
+        function hideLoading(elementId) {
+            document.getElementById(elementId).classList.remove('show');
+        }
+
+        function displayResponse(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        function clearResponse(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+        
+        function showPreview(type, url, fileType) {
+            console.log('Showing preview for:', type, url, fileType);
+            const preview = document.getElementById(`${type}Preview`);
+            if (preview) {
+                if (fileType.startsWith('image/')) {
+                    preview.innerHTML = `
+                        <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <h4>✅ Upload Successful!</h4>
+                            <p><strong>Cloudinary URL:</strong></p>
+                            <a href="${url}" target="_blank" style="color: #007bff; word-break: break-all;">${url}</a>
+                            <div style="margin-top: 10px;">
+                                <img src="${url}" alt="Uploaded image" style="max-width: 100%; max-height: 300px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            </div>
+                        </div>
+                    `;
+                } else if (fileType.startsWith('video/')) {
+                    preview.innerHTML = `
+                        <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <h4>✅ Upload Successful!</h4>
+                            <p><strong>Cloudinary URL:</strong></p>
+                            <a href="${url}" target="_blank" style="color: #007bff; word-break: break-all;">${url}</a>
+                            <div style="margin-top: 10px;">
+                                <video controls style="max-width: 100%; max-height: 300px; border-radius: 8px;">
+                                    <source src="${url}" type="${fileType}">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    preview.innerHTML = `
+                        <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <h4>✅ Upload Successful!</h4>
+                            <p><strong>Cloudinary URL:</strong></p>
+                            <a href="${url}" target="_blank" style="color: #007bff; word-break: break-all;">${url}</a>
+                            <p style="margin-top: 10px;">📄 File uploaded successfully</p>
+                        </div>
+                    `;
+                }
+                preview.style.display = 'block';
+            }
+        }
+        
+        // Add event listeners when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('File upload page loaded');
+            
+            // Profile image upload
+            document.getElementById('profileUploadBtn').addEventListener('click', () => uploadFile('profile'));
+            document.getElementById('profileClearBtn').addEventListener('click', () => clearUpload('profile'));
+            
+            // Project image upload
+            document.getElementById('projectUploadBtn').addEventListener('click', () => uploadFile('project'));
+            document.getElementById('projectClearBtn').addEventListener('click', () => clearUpload('project'));
+            
+            // Blog image upload
+            document.getElementById('blogUploadBtn').addEventListener('click', () => uploadFile('blog'));
+            document.getElementById('blogClearBtn').addEventListener('click', () => clearUpload('blog'));
+            
+            // Service image upload
+            document.getElementById('serviceUploadBtn').addEventListener('click', () => uploadFile('service'));
+            document.getElementById('serviceClearBtn').addEventListener('click', () => clearUpload('service'));
+            
+            // Document upload
+            document.getElementById('documentUploadBtn').addEventListener('click', () => uploadFile('document'));
+            document.getElementById('documentClearBtn').addEventListener('click', () => clearUpload('document'));
+            
+            // General file upload
+            document.getElementById('generalUploadBtn').addEventListener('click', () => uploadFile('general'));
+            document.getElementById('generalClearBtn').addEventListener('click', () => clearUpload('general'));
+            
+            console.log('File upload event listeners added');
+        });
+    </script>
+</body>
+</html>

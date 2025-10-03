@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Services API Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        
+        .response-area {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .method-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .method-post { background: #cce5ff; color: #004085; }
+        
+        .token-input {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .chat-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #e9ecef;
+        }
+        
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .user-message {
+            background: #667eea;
+            color: white;
+            margin-left: 20%;
+        }
+        
+        .ai-message {
+            background: #e9ecef;
+            color: #2c3e50;
+            margin-right: 20%;
+        }
+        
+        .sample-prompts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .sample-prompt {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .sample-prompt:hover {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Services API Testing</h1>
+            <p>Test AI chatbot and assistant capabilities</p>
+        </div>
+        
+        <div class="nav">
+            <a href="index.html">← Back to Dashboard</a>
+        </div>
+        
+        <div class="content">
+            <!-- Auth Token Input -->
+            <div class="token-input">
+                <label for="authToken">Authorization Token (required for protected routes):</label>
+                <input type="text" id="authToken" placeholder="Enter JWT token from login" style="margin-top: 10px;">
+            </div>
+            
+            <!-- AI Chatbot -->
+            <div class="test-section">
+                <h3>AI Chatbot</h3>
+                <span class="method-tag method-post">POST /api/v1/ai/chatbot</span>
+                <span class="method-tag method-post">POST /api/v1/ai/chat</span>
+                
+                <div class="form-group">
+                    <label>Message:</label>
+                    <textarea id="chatMessage" placeholder="Enter your message or question about the company...">Tell me about your company's services and expertise.</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Conversation Context (optional):</label>
+                    <textarea id="chatContext" placeholder="Previous conversation context..."></textarea>
+                </div>
+                
+                <button class="btn" onclick="sendChatMessage()">Send Message</button>
+                <button class="btn" onclick="sendChatMessage('/chat')">Send via /chat</button>
+                <button class="btn btn-secondary" onclick="clearChat()">Clear Chat</button>
+                
+                <div class="sample-prompts">
+                    <div class="sample-prompt" onclick="setSamplePrompt(this)">Tell me about your company's services</div>
+                    <div class="sample-prompt" onclick="setSamplePrompt(this)">What technologies do you use?</div>
+                    <div class="sample-prompt" onclick="setSamplePrompt(this)">Show me your recent projects</div>
+                    <div class="sample-prompt" onclick="setSamplePrompt(this)">Who are your team members?</div>
+                    <div class="sample-prompt" onclick="setSamplePrompt(this)">What's your development process?</div>
+                    <div class="sample-prompt" onclick="setSamplePrompt(this)">How can I contact you?</div>
+                </div>
+                
+                <div id="chatLoading" class="loading">
+                    <div class="spinner"></div>
+                    <span>AI is thinking...</span>
+                </div>
+                
+                <div id="chatContainer" class="chat-container" style="display: none;">
+                    <div id="chatMessages"></div>
+                </div>
+                
+                <div id="chatResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- AI Assistant -->
+            <div class="test-section">
+                <h3>AI Assistant</h3>
+                <span class="method-tag method-post">POST /api/v1/ai/assistant</span>
+                
+                <div class="form-group">
+                    <label>Query:</label>
+                    <textarea id="assistantQuery" placeholder="Enter your query or request...">Help me write a professional email to a potential client introducing our web development services.</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Assistant Type:</label>
+                    <select id="assistantType">
+                        <option value="general">General Assistant</option>
+                        <option value="technical">Technical Assistant</option>
+                        <option value="business">Business Assistant</option>
+                        <option value="creative">Creative Assistant</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="queryAssistant()">Query Assistant</button>
+                <button class="btn btn-secondary" onclick="clearResponse('assistantResponse')">Clear</button>
+                
+                <div class="sample-prompts">
+                    <div class="sample-prompt" onclick="setAssistantPrompt(this)">Write a project proposal template</div>
+                    <div class="sample-prompt" onclick="setAssistantPrompt(this)">Create a technical documentation outline</div>
+                    <div class="sample-prompt" onclick="setAssistantPrompt(this)">Draft a client onboarding email</div>
+                    <div class="sample-prompt" onclick="setAssistantPrompt(this)">Generate API documentation</div>
+                    <div class="sample-prompt" onclick="setAssistantPrompt(this)">Write test cases for a feature</div>
+                    <div class="sample-prompt" onclick="setAssistantPrompt(this)">Create a project timeline</div>
+                </div>
+                
+                <div id="assistantLoading" class="loading">
+                    <div class="spinner"></div>
+                    <span>Assistant is working...</span>
+                </div>
+                
+                <div id="assistantResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- AI Health Check -->
+            <div class="test-section">
+                <h3>AI Service Health</h3>
+                <span class="method-tag method-post">GET /api/v1/ai/health</span>
+                
+                <button class="btn" onclick="checkAIHealth()">Check Health</button>
+                <button class="btn btn-secondary" onclick="clearResponse('healthResponse')">Clear</button>
+                
+                <div id="healthResponse" class="response-area" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000/api/v1';
+        let chatHistory = [];
+
+        function getAuthHeaders() {
+            const token = document.getElementById('authToken').value;
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        async function sendChatMessage(endpoint = '/chatbot') {
+            const message = document.getElementById('chatMessage').value;
+            const context = document.getElementById('chatContext').value;
+            
+            if (!message.trim()) {
+                alert('Please enter a message');
+                return;
+            }
+
+            const data = {
+                message: message,
+                context: context || undefined
+            };
+
+            showLoading('chatLoading');
+            
+            try {
+                const response = await fetch(`${BASE_URL}/ai${endpoint}`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                hideLoading('chatLoading');
+                
+                // Add to chat history
+                chatHistory.push({
+                    type: 'user',
+                    message: message,
+                    timestamp: new Date()
+                });
+
+                if (result.success && result.data) {
+                    chatHistory.push({
+                        type: 'ai',
+                        message: result.data.response || result.data.message,
+                        timestamp: new Date()
+                    });
+                }
+
+                updateChatDisplay();
+                
+                displayResponse('chatResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    endpoint: endpoint,
+                    data: result
+                });
+
+                // Update context for next message
+                if (result.success && result.data) {
+                    document.getElementById('chatContext').value = message + '\n' + (result.data.response || result.data.message);
+                }
+                
+                // Clear message input
+                document.getElementById('chatMessage').value = '';
+                
+            } catch (error) {
+                hideLoading('chatLoading');
+                displayResponse('chatResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function queryAssistant() {
+            const query = document.getElementById('assistantQuery').value;
+            const type = document.getElementById('assistantType').value;
+            
+            if (!query.trim()) {
+                alert('Please enter a query');
+                return;
+            }
+
+            const data = {
+                query: query,
+                type: type
+            };
+
+            showLoading('assistantLoading');
+            
+            try {
+                const response = await fetch(`${BASE_URL}/ai/assistant`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                hideLoading('assistantLoading');
+                
+                displayResponse('assistantResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+                
+            } catch (error) {
+                hideLoading('assistantLoading');
+                displayResponse('assistantResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function checkAIHealth() {
+            try {
+                const response = await fetch(`${BASE_URL}/ai/health`, {
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('healthResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('healthResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        function updateChatDisplay() {
+            const container = document.getElementById('chatContainer');
+            const messagesDiv = document.getElementById('chatMessages');
+            
+            container.style.display = 'block';
+            messagesDiv.innerHTML = '';
+            
+            chatHistory.forEach(chat => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message ${chat.type}-message`;
+                messageDiv.innerHTML = `
+                    <strong>${chat.type === 'user' ? 'You' : 'AI'}:</strong><br>
+                    ${chat.message}
+                    <div style="font-size: 0.8em; opacity: 0.7; margin-top: 5px;">
+                        ${chat.timestamp.toLocaleTimeString()}
+                    </div>
+                `;
+                messagesDiv.appendChild(messageDiv);
+            });
+            
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearChat() {
+            chatHistory = [];
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('chatMessage').value = '';
+            document.getElementById('chatContext').value = '';
+            clearResponse('chatResponse');
+        }
+
+        function setSamplePrompt(element) {
+            document.getElementById('chatMessage').value = element.textContent;
+        }
+
+        function setAssistantPrompt(element) {
+            document.getElementById('assistantQuery').value = element.textContent;
+        }
+
+        function showLoading(elementId) {
+            document.getElementById(elementId).classList.add('show');
+        }
+
+        function hideLoading(elementId) {
+            document.getElementById(elementId).classList.remove('show');
+        }
+
+        function displayResponse(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        function clearResponse(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+    </script>
+</body>
+</html>

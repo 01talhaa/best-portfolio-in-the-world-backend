@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects API Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
+        .response-area {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .method-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .method-get { background: #d4edda; color: #155724; }
+        .method-post { background: #cce5ff; color: #004085; }
+        .method-put { background: #fff3cd; color: #856404; }
+        .method-delete { background: #f8d7da; color: #721c24; }
+        
+        .token-input {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .tech-stack, .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .date-range {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Projects API Testing</h1>
+            <p>Test project portfolio management operations</p>
+        </div>
+        
+        <div class="nav">
+            <a href="index.html">← Back to Dashboard</a>
+        </div>
+        
+        <div class="content">
+            <!-- Auth Token Input -->
+            <div class="token-input">
+                <label for="authToken">Authorization Token (required for protected routes):</label>
+                <input type="text" id="authToken" placeholder="Enter JWT token from login" style="margin-top: 10px;">
+            </div>
+            
+            <!-- Get All Projects -->
+            <div class="test-section">
+                <h3>Get All Projects</h3>
+                <span class="method-tag method-get">GET /api/v1/projects</span>
+                
+                <button id="getAllProjectsBtn" class="btn">Get All Projects</button>
+                <button id="clearAllBtn" class="btn btn-secondary">Clear</button>
+                <button id="testJSBtn" class="btn" style="background-color: #28a745;">Test JavaScript</button>
+                
+                <div id="getAllResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Create Project -->
+            <div class="test-section">
+                <h3>Create Project</h3>
+                <span class="method-tag method-post">POST /api/v1/projects</span>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" id="createTitle" value="E-Commerce Platform">
+                    </div>
+                    <div class="form-group">
+                        <label>Category:</label>
+                        <select id="createCategory">
+                            <option value="Website" selected>Website</option>
+                            <option value="Mobile App">Mobile App</option>
+                            <option value="Web App">Web App</option>
+                            <option value="E-commerce">E-commerce</option>
+                            <option value="Software">Software</option>
+                            <option value="Design">Design</option>
+                            <option value="Consulting">Consulting</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="createDescription">A modern e-commerce platform built with React and Node.js, featuring user authentication, payment integration, and admin dashboard.</textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Client (Optional - requires valid Client ID):</label>
+                        <input type="text" id="createClient" value="" placeholder="Leave empty for now">
+                    </div>
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select id="createStatus">
+                            <option value="Planning">Planning</option>
+                            <option value="In Progress" selected>In Progress</option>
+                            <option value="Testing">Testing</option>
+                            <option value="Completed">Completed</option>
+                            <option value="On Hold">On Hold</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="date-range">
+                    <div class="form-group">
+                        <label>Start Date:</label>
+                        <input type="date" id="createStartDate" value="2024-01-15">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date:</label>
+                        <input type="date" id="createEndDate" value="2024-06-15">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Technologies (comma-separated):</label>
+                    <input type="text" id="createTechnologies" value="React, Node.js, MongoDB, Express, Stripe API">
+                </div>
+                
+                <div class="form-group">
+                    <label>Features (comma-separated):</label>
+                    <input type="text" id="createFeatures" value="User Authentication, Payment Processing, Product Catalog, Admin Dashboard, Order Management">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>GitHub URL:</label>
+                        <input type="url" id="createGithub" value="https://github.com/company/ecommerce-platform">
+                    </div>
+                    <div class="form-group">
+                        <label>Live Demo URL:</label>
+                        <input type="url" id="createLiveDemo" value="https://ecommerce-demo.company.com">
+                    </div>
+                </div>
+                
+                <button id="createProjectBtn" class="btn">Create Project</button>
+                <button id="clearCreateBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="createResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Get Project by ID -->
+            <div class="test-section">
+                <h3>Get Project by ID</h3>
+                <span class="method-tag method-get">GET /api/v1/projects/:id</span>
+                
+                <div class="form-group">
+                    <label>Project ID:</label>
+                    <input type="text" id="getProjectId" placeholder="Enter project ID">
+                </div>
+                
+                <button id="getProjectBtn" class="btn">Get Project</button>
+                <button id="clearGetBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="getByIdResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Update Project -->
+            <div class="test-section">
+                <h3>Update Project</h3>
+                <span class="method-tag method-put">PUT /api/v1/projects/:id</span>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project ID:</label>
+                        <input type="text" id="updateProjectId" placeholder="Enter project ID">
+                    </div>
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" id="updateTitle" value="Advanced E-Commerce Platform">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="updateDescription">An enhanced e-commerce platform with advanced features including AI recommendations, real-time chat support, and multi-vendor support.</textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select id="updateStatus">
+                            <option value="Planning">Planning</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Testing">Testing</option>
+                            <option value="Completed" selected>Completed</option>
+                            <option value="On Hold">On Hold</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>End Date:</label>
+                        <input type="date" id="updateEndDate" value="2024-05-30">
+                    </div>
+                </div>
+                
+                <button id="updateProjectBtn" class="btn">Update Project</button>
+                <button id="clearUpdateBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="updateResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Get Projects by Category -->
+            <div class="test-section">
+                <h3>Get Projects by Category</h3>
+                <span class="method-tag method-get">GET /api/v1/projects/category/:category</span>
+                
+                <div class="form-group">
+                    <label>Category:</label>
+                    <select id="categoryFilter">
+                        <option value="Web Development" selected>Web Development</option>
+                        <option value="Mobile App">Mobile App</option>
+                        <option value="Desktop Application">Desktop Application</option>
+                        <option value="API Development">API Development</option>
+                        <option value="AI/ML">AI/ML</option>
+                        <option value="UI/UX Design">UI/UX Design</option>
+                        <option value="DevOps">DevOps</option>
+                        <option value="Consulting">Consulting</option>
+                    </select>
+                </div>
+                
+                <button id="getCategoryBtn" class="btn">Get by Category</button>
+                <button id="clearCategoryBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="categoryResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Get Featured Projects -->
+            <div class="test-section">
+                <h3>Get Featured Projects</h3>
+                <span class="method-tag method-get">GET /api/v1/projects/featured</span>
+                
+                <button id="getFeaturedBtn" class="btn">Get Featured</button>
+                <button id="clearFeaturedBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="featuredResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Delete Project -->
+            <div class="test-section">
+                <h3>Delete Project</h3>
+                <span class="method-tag method-delete">DELETE /api/v1/projects/:id</span>
+                
+                <div class="form-group">
+                    <label>Project ID:</label>
+                    <input type="text" id="deleteProjectId" placeholder="Enter project ID">
+                </div>
+                
+                <button id="deleteProjectBtn" class="btn btn-danger">Delete Project</button>
+                <button id="clearDeleteBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="deleteResponse" class="response-area" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000/api/v1';
+        
+        // Test function to verify JavaScript is working
+        function testJS() {
+            console.log('JavaScript is working in projects.html!');
+            alert('JavaScript is working! Check console for more details.');
+            console.log('BASE_URL:', BASE_URL);
+        }
+
+        function getAuthHeaders() {
+            console.log('Getting auth headers...');
+            const token = document.getElementById('authToken').value;
+            console.log('Token:', token ? 'Token found' : 'No token');
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        async function getAllProjects() {
+            console.log('getAllProjects called');
+            try {
+                console.log('Making request to:', `${BASE_URL}/projects`);
+                const response = await fetch(`${BASE_URL}/projects`, {
+                    headers: getAuthHeaders()
+                });
+
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Response data:', result);
+                
+                displayResponse('getAllResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                console.error('Error in getAllProjects:', error);
+                displayResponse('getAllResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function createProject() {
+            const technologies = document.getElementById('createTechnologies').value.split(',').map(tech => tech.trim());
+            const features = document.getElementById('createFeatures').value.split(',').map(feature => feature.trim());
+            
+            const data = {
+                title: document.getElementById('createTitle').value,
+                shortDescription: document.getElementById('createDescription').value,
+                fullDescription: document.getElementById('createDescription').value + " - Full detailed description of the project including all features and technical implementation.",
+                category: document.getElementById('createCategory').value,
+                // client: document.getElementById('createClient').value, // Remove client for now since it needs ObjectId
+                status: document.getElementById('createStatus').value,
+                startDate: document.getElementById('createStartDate').value,
+                estimatedCompletionDate: document.getElementById('createEndDate').value,
+                technologies: technologies,
+                tags: technologies, // Use technologies as tags
+                liveLink: document.getElementById('createLiveDemo').value,
+                caseStudyLink: document.getElementById('createGithub').value,
+                featured: true
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/projects`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                displayResponse('createResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+
+                // Auto-fill ID fields with created project ID
+                if (result.success && result.data && result.data._id) {
+                    document.getElementById('getProjectId').value = result.data._id;
+                    document.getElementById('updateProjectId').value = result.data._id;
+                    document.getElementById('deleteProjectId').value = result.data._id;
+                }
+            } catch (error) {
+                displayResponse('createResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function getProjectById() {
+            const id = document.getElementById('getProjectId').value;
+            if (!id) {
+                alert('Please enter a project ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/projects/${id}`, {
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('getByIdResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('getByIdResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function updateProject() {
+            const id = document.getElementById('updateProjectId').value;
+            if (!id) {
+                alert('Please enter a project ID');
+                return;
+            }
+
+            const data = {
+                title: document.getElementById('updateTitle').value,
+                description: document.getElementById('updateDescription').value,
+                status: document.getElementById('updateStatus').value,
+                endDate: document.getElementById('updateEndDate').value
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/projects/${id}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                displayResponse('updateResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('updateResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function getProjectsByCategory() {
+            const category = document.getElementById('categoryFilter').value;
+
+            try {
+                const response = await fetch(`${BASE_URL}/projects/category/${encodeURIComponent(category)}`, {
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('categoryResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('categoryResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function getFeaturedProjects() {
+            try {
+                const response = await fetch(`${BASE_URL}/projects/featured`, {
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('featuredResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('featuredResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function deleteProject() {
+            const id = document.getElementById('deleteProjectId').value;
+            if (!id) {
+                alert('Please enter a project ID');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this project?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/projects/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('deleteResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('deleteResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        function displayResponse(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        function clearResponse(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+
+        // Set default dates and add event listeners
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            const sixMonthsLater = new Date();
+            sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+            const endDate = sixMonthsLater.toISOString().split('T')[0];
+            
+            document.getElementById('createStartDate').value = today;
+            document.getElementById('createEndDate').value = endDate;
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded for projects page');
+            
+            // Add event listeners for all buttons
+            document.getElementById('getAllProjectsBtn').addEventListener('click', getAllProjects);
+            document.getElementById('clearAllBtn').addEventListener('click', () => clearResponse('getAllResponse'));
+            document.getElementById('testJSBtn').addEventListener('click', testJS);
+            
+            document.getElementById('createProjectBtn').addEventListener('click', createProject);
+            document.getElementById('clearCreateBtn').addEventListener('click', () => clearResponse('createResponse'));
+            
+            document.getElementById('getProjectBtn').addEventListener('click', getProjectById);
+            document.getElementById('clearGetBtn').addEventListener('click', () => clearResponse('getByIdResponse'));
+            
+            document.getElementById('updateProjectBtn').addEventListener('click', updateProject);
+            document.getElementById('clearUpdateBtn').addEventListener('click', () => clearResponse('updateResponse'));
+            
+            document.getElementById('getCategoryBtn').addEventListener('click', getProjectsByCategory);
+            document.getElementById('clearCategoryBtn').addEventListener('click', () => clearResponse('categoryResponse'));
+            
+            document.getElementById('getFeaturedBtn').addEventListener('click', getFeaturedProjects);
+            document.getElementById('clearFeaturedBtn').addEventListener('click', () => clearResponse('featuredResponse'));
+            
+            document.getElementById('deleteProjectBtn').addEventListener('click', deleteProject);
+            document.getElementById('clearDeleteBtn').addEventListener('click', () => clearResponse('deleteResponse'));
+            
+            console.log('Projects event listeners added successfully');
+        });
+    </script>
+</body>
+</html>
