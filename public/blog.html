@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog API Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
+        .response-area {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .method-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .method-get { background: #d4edda; color: #155724; }
+        .method-post { background: #cce5ff; color: #004085; }
+        .method-put { background: #fff3cd; color: #856404; }
+        .method-delete { background: #f8d7da; color: #721c24; }
+        
+        .token-input {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Blog API Testing</h1>
+            <p>Test blog post management operations</p>
+        </div>
+        
+        <div class="nav">
+            <a href="index.html">← Back to Dashboard</a>
+        </div>
+        
+        <div class="content">
+            <!-- Auth Token Input -->
+            <div class="token-input">
+                <label for="authToken">Authorization Token (required for protected routes):</label>
+                <input type="text" id="authToken" placeholder="Enter JWT token from login" style="margin-top: 10px;">
+            </div>
+            
+            <!-- Get All Blog Posts -->
+            <div class="test-section">
+                <h3>Get All Blog Posts</h3>
+                <span class="method-tag method-get">GET /api/v1/blog</span>
+                
+                <button class="btn" onclick="getAllPosts()">Get All Posts</button>
+                <button class="btn btn-secondary" onclick="clearResponse('getAllResponse')">Clear</button>
+                
+                <div id="getAllResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Create Blog Post -->
+            <div class="test-section">
+                <h3>Create Blog Post</h3>
+                <span class="method-tag method-post">POST /api/v1/blog</span>
+                
+                <div class="form-group">
+                    <label>Title:</label>
+                    <input type="text" id="createTitle" value="Getting Started with Modern Web Development">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category:</label>
+                        <select id="createCategory">
+                            <option value="Technology" selected>Technology</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Mobile Development">Mobile Development</option>
+                            <option value="AI/ML">AI/ML</option>
+                            <option value="DevOps">DevOps</option>
+                            <option value="Design">Design</option>
+                            <option value="Business">Business</option>
+                            <option value="Tutorial">Tutorial</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select id="createStatus">
+                            <option value="Draft">Draft</option>
+                            <option value="Published" selected>Published</option>
+                            <option value="Archived">Archived</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Summary:</label>
+                    <textarea id="createSummary" style="height: 80px;">A comprehensive guide to modern web development practices, covering React, Node.js, and the latest industry trends.</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Content:</label>
+                    <textarea id="createContent">In this comprehensive guide, we'll explore the fundamentals of modern web development...
+
+## Introduction
+
+Modern web development has evolved significantly over the past few years. With the rise of new frameworks, tools, and best practices, developers need to stay updated with the latest trends.
+
+## Key Technologies
+
+- **Frontend**: React, Vue.js, Angular
+- **Backend**: Node.js, Express, FastAPI
+- **Database**: MongoDB, PostgreSQL, Redis
+- **DevOps**: Docker, Kubernetes, CI/CD
+
+## Best Practices
+
+1. Write clean, maintainable code
+2. Follow SOLID principles
+3. Implement proper testing strategies
+4. Use version control effectively
+5. Focus on performance optimization
+
+## Conclusion
+
+By following these modern web development practices, you can build scalable, maintainable applications that meet today's standards.</textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tags (comma-separated):</label>
+                        <input type="text" id="createTags" value="web development, react, node.js, tutorial, programming">
+                    </div>
+                    <div class="form-group">
+                        <label>Reading Time (minutes):</label>
+                        <input type="number" id="createReadingTime" value="8" min="1">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Featured:</label>
+                        <select id="createFeatured">
+                            <option value="true" selected>Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>SEO Keywords:</label>
+                        <input type="text" id="createSeoKeywords" value="modern web development, react tutorial, node.js guide">
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="createPost()">Create Post</button>
+                <button class="btn btn-secondary" onclick="clearResponse('createResponse')">Clear</button>
+                
+                <div id="createResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Get Blog Post by ID -->
+            <div class="test-section">
+                <h3>Get Blog Post by ID</h3>
+                <span class="method-tag method-get">GET /api/v1/blog/:id</span>
+                
+                <div class="form-group">
+                    <label>Post ID:</label>
+                    <input type="text" id="getPostId" placeholder="Enter blog post ID">
+                </div>
+                
+                <button class="btn" onclick="getPostById()">Get Post</button>
+                <button class="btn btn-secondary" onclick="clearResponse('getByIdResponse')">Clear</button>
+                
+                <div id="getByIdResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Update Blog Post -->
+            <div class="test-section">
+                <h3>Update Blog Post</h3>
+                <span class="method-tag method-put">PUT /api/v1/blog/:id</span>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Post ID:</label>
+                        <input type="text" id="updatePostId" placeholder="Enter blog post ID">
+                    </div>
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" id="updateTitle" value="Advanced Web Development Techniques">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Summary:</label>
+                    <textarea id="updateSummary" style="height: 80px;">An updated comprehensive guide covering advanced web development techniques and emerging technologies.</textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Category:</label>
+                        <select id="updateCategory">
+                            <option value="Technology" selected>Technology</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Advanced Tutorial">Advanced Tutorial</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status:</label>
+                        <select id="updateStatus">
+                            <option value="Draft">Draft</option>
+                            <option value="Published" selected>Published</option>
+                            <option value="Archived">Archived</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="updatePost()">Update Post</button>
+                <button class="btn btn-secondary" onclick="clearResponse('updateResponse')">Clear</button>
+                
+                <div id="updateResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Delete Blog Post -->
+            <div class="test-section">
+                <h3>Delete Blog Post</h3>
+                <span class="method-tag method-delete">DELETE /api/v1/blog/:id</span>
+                
+                <div class="form-group">
+                    <label>Post ID:</label>
+                    <input type="text" id="deletePostId" placeholder="Enter blog post ID">
+                </div>
+                
+                <button class="btn btn-danger" onclick="deletePost()">Delete Post</button>
+                <button class="btn btn-secondary" onclick="clearResponse('deleteResponse')">Clear</button>
+                
+                <div id="deleteResponse" class="response-area" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000/api/v1';
+
+        function getAuthHeaders() {
+            const token = document.getElementById('authToken').value;
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        async function getAllPosts() {
+            try {
+                const response = await fetch(`${BASE_URL}/blog`, {
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('getAllResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('getAllResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function createPost() {
+            const tags = document.getElementById('createTags').value.split(',').map(tag => tag.trim());
+            const seoKeywords = document.getElementById('createSeoKeywords').value.split(',').map(keyword => keyword.trim());
+            
+            const data = {
+                title: document.getElementById('createTitle').value,
+                summary: document.getElementById('createSummary').value,
+                content: document.getElementById('createContent').value,
+                category: document.getElementById('createCategory').value,
+                tags: tags,
+                status: document.getElementById('createStatus').value,
+                readingTime: parseInt(document.getElementById('createReadingTime').value),
+                isFeatured: document.getElementById('createFeatured').value === 'true',
+                seoKeywords: seoKeywords
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/blog`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                displayResponse('createResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+
+                // Auto-fill ID fields with created post ID
+                if (result.success && result.data && result.data._id) {
+                    document.getElementById('getPostId').value = result.data._id;
+                    document.getElementById('updatePostId').value = result.data._id;
+                    document.getElementById('deletePostId').value = result.data._id;
+                }
+            } catch (error) {
+                displayResponse('createResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function getPostById() {
+            const id = document.getElementById('getPostId').value;
+            if (!id) {
+                alert('Please enter a post ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/blog/${id}`, {
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('getByIdResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('getByIdResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function updatePost() {
+            const id = document.getElementById('updatePostId').value;
+            if (!id) {
+                alert('Please enter a post ID');
+                return;
+            }
+
+            const data = {
+                title: document.getElementById('updateTitle').value,
+                summary: document.getElementById('updateSummary').value,
+                category: document.getElementById('updateCategory').value,
+                status: document.getElementById('updateStatus').value
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/blog/${id}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                displayResponse('updateResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('updateResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function deletePost() {
+            const id = document.getElementById('deletePostId').value;
+            if (!id) {
+                alert('Please enter a post ID');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this blog post?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/blog/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('deleteResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('deleteResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        function displayResponse(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        function clearResponse(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+    </script>
+</body>
+</html>

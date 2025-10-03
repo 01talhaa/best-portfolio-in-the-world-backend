@@ -1,0 +1,1089 @@
+{
+  "info": {
+    "name": "Company Portfolio API - Complete Collection with File Upload",
+    "description": "Comprehensive API collection for the Company Portfolio Backend with Cloudinary file upload capabilities, fixed validations, and all endpoints.",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"email\": \"admin@company.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.json().success) {",
+                  "    pm.collectionVariables.set('authToken', pm.response.json().data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Logout User",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "File Upload (Cloudinary)",
+      "item": [
+        {
+          "name": "Upload Single File",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "Select an image, video, or document to upload"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/upload/single",
+              "host": ["{{baseUrl}}"],
+              "path": ["upload", "single"]
+            }
+          }
+        },
+        {
+          "name": "Upload Multiple Files",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": [],
+                  "description": "Select multiple files to upload"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/upload/multiple",
+              "host": ["{{baseUrl}}"],
+              "path": ["upload", "multiple"]
+            }
+          }
+        },
+        {
+          "name": "Upload Profile Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "profileImage",
+                  "type": "file",
+                  "src": [],
+                  "description": "Select a profile image"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/upload/profile-image",
+              "host": ["{{baseUrl}}"],
+              "path": ["upload", "profile-image"]
+            }
+          }
+        },
+        {
+          "name": "Upload Certificate",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "certificate",
+                  "type": "file",
+                  "src": [],
+                  "description": "Select a certificate document"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/upload/certificate",
+              "host": ["{{baseUrl}}"],
+              "path": ["upload", "certificate"]
+            }
+          }
+        },
+        {
+          "name": "Upload Project Media",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "media",
+                  "type": "file",
+                  "src": [],
+                  "description": "Select project images/videos"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/upload/project-media",
+              "host": ["{{baseUrl}}"],
+              "path": ["upload", "project-media"]
+            }
+          }
+        },
+        {
+          "name": "Delete File",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/upload/public_id_here",
+              "host": ["{{baseUrl}}"],
+              "path": ["upload", "public_id_here"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Services",
+      "item": [
+        {
+          "name": "Get All Services",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/services?page=1&limit=10&featured=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["services"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"},
+                {"key": "featured", "value": "true"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Service by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/services/SERVICE_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["services", "SERVICE_ID"]
+            }
+          }
+        },
+        {
+          "name": "Create Service",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Web Development\",\n  \"description\": \"Professional web development services using modern technologies\",\n  \"shortDescription\": \"Modern web solutions\",\n  \"category\": \"Web Development\",\n  \"featured\": true,\n  \"tags\": [\"React\", \"Node.js\", \"MongoDB\"],\n  \"images\": [\"https://example.com/image1.jpg\"],\n  \"videos\": [\"https://example.com/video1.mp4\"],\n  \"priceRange\": \"$2000 - $5000\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["services"]
+            }
+          }
+        },
+        {
+          "name": "Update Service",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Web Development\",\n  \"description\": \"Updated description\",\n  \"featured\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/services/SERVICE_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["services", "SERVICE_ID"]
+            }
+          }
+        },
+        {
+          "name": "Delete Service",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/services/SERVICE_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["services", "SERVICE_ID"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Team Members",
+      "item": [
+        {
+          "name": "Get All Team Members",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/team-members?featured=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["team-members"],
+              "query": [
+                {"key": "featured", "value": "true"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Team Member by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/team-members/MEMBER_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["team-members", "MEMBER_ID"]
+            }
+          }
+        },
+        {
+          "name": "Create Team Member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@company.com\",\n  \"phone\": \"+1-555-0123\",\n  \"position\": \"Senior Developer\",\n  \"bio\": \"Experienced full-stack developer with 5+ years\",\n  \"profileImage\": \"https://res.cloudinary.com/your-cloud/image/upload/v1234567890/profile.jpg\",\n  \"skills\": [\"JavaScript\", \"React\", \"Node.js\", \"MongoDB\"],\n  \"featured\": true,\n  \"education\": [\n    {\n      \"degree\": \"Bachelor of Computer Science\",\n      \"institution\": \"Tech University\",\n      \"startDate\": \"2015-09-01\",\n      \"endDate\": \"2019-06-01\",\n      \"description\": \"Computer Science with focus on web development\",\n      \"certificates\": [\n        {\n          \"name\": \"React Certification\",\n          \"url\": \"https://certificate-url.com\",\n          \"issueDate\": \"2020-01-15\"\n        }\n      ],\n      \"certificateImages\": [\"https://res.cloudinary.com/your-cloud/certificate.jpg\"]\n    }\n  ],\n  \"experience\": [\n    {\n      \"jobTitle\": \"Frontend Developer\",\n      \"companyName\": \"Previous Company\",\n      \"startDate\": \"2019-07-01\",\n      \"endDate\": \"2022-01-01\",\n      \"description\": \"Developed React applications\",\n      \"achievements\": [\"Built 10+ applications\", \"Led team of 3\"],\n      \"images\": [\"https://example.com/work-image.jpg\"]\n    }\n  ],\n  \"awards\": [\n    {\n      \"name\": \"Best Developer 2023\",\n      \"year\": 2023,\n      \"issuer\": \"Tech Awards\",\n      \"description\": \"Outstanding performance in development\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/team-members",
+              "host": ["{{baseUrl}}"],
+              "path": ["team-members"]
+            }
+          }
+        },
+        {
+          "name": "Update Team Member",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"position\": \"Lead Developer\",\n  \"skills\": [\"JavaScript\", \"React\", \"Node.js\", \"MongoDB\", \"Python\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/team-members/MEMBER_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["team-members", "MEMBER_ID"]
+            }
+          }
+        },
+        {
+          "name": "Delete Team Member",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/team-members/MEMBER_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["team-members", "MEMBER_ID"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "item": [
+        {
+          "name": "Get All Projects",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/projects?status=Completed&featured=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects"],
+              "query": [
+                {"key": "status", "value": "Completed"},
+                {"key": "featured", "value": "true"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Project by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/projects/PROJECT_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "PROJECT_ID"]
+            }
+          }
+        },
+        {
+          "name": "Create Project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"E-commerce Platform\",\n  \"fullDescription\": \"A comprehensive e-commerce platform built with React and Node.js, featuring advanced search, payment integration, and real-time inventory management.\",\n  \"shortDescription\": \"Modern e-commerce solution\",\n  \"thumbnail\": \"https://res.cloudinary.com/your-cloud/project-thumb.jpg\",\n  \"images\": [\n    \"https://res.cloudinary.com/your-cloud/project1.jpg\",\n    \"https://res.cloudinary.com/your-cloud/project2.jpg\"\n  ],\n  \"videos\": [\"https://res.cloudinary.com/your-cloud/demo.mp4\"],\n  \"technologies\": [\"React\", \"Node.js\", \"MongoDB\", \"Stripe\"],\n  \"category\": \"Web Development\",\n  \"status\": \"Completed\",\n  \"featured\": true,\n  \"startDate\": \"2023-01-01\",\n  \"endDate\": \"2023-06-01\",\n  \"projectUrl\": \"https://example-ecommerce.com\",\n  \"githubUrl\": \"https://github.com/company/ecommerce\",\n  \"challenges\": [\"Complex payment integration\", \"Real-time inventory updates\"],\n  \"solutions\": [\"Used Stripe API\", \"Implemented WebSocket connections\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/projects",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects"]
+            }
+          }
+        },
+        {
+          "name": "Update Project",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\",\n  \"technologies\": [\"React\", \"Node.js\", \"MongoDB\", \"Stripe\", \"Redis\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/projects/PROJECT_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "PROJECT_ID"]
+            }
+          }
+        },
+        {
+          "name": "Delete Project",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/projects/PROJECT_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["projects", "PROJECT_ID"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clients",
+      "item": [
+        {
+          "name": "Get All Clients",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients"]
+            }
+          }
+        },
+        {
+          "name": "Get Client by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/clients/CLIENT_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients", "CLIENT_ID"]
+            }
+          }
+        },
+        {
+          "name": "Create Client",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"TechCorp Inc.\",\n  \"logo\": \"https://res.cloudinary.com/your-cloud/logo.jpg\",\n  \"industry\": \"Technology\",\n  \"website\": \"https://techcorp.com\",\n  \"description\": \"Leading technology company specializing in enterprise solutions\",\n  \"contactPerson\": {\n    \"name\": \"Jane Smith\",\n    \"title\": \"CTO\",\n    \"email\": \"jane.smith@techcorp.com\",\n    \"phone\": \"+1-555-0124\"\n  },\n  \"contactEmail\": \"contact@techcorp.com\",\n  \"contactPhone\": \"+1-555-0100\",\n  \"location\": {\n    \"address\": \"123 Tech Street\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"country\": \"USA\",\n    \"zipCode\": \"94105\"\n  },\n  \"companySize\": \"Medium (51-200)\",\n  \"partnership\": {\n    \"startDate\": \"2023-01-01\",\n    \"status\": \"Active\",\n    \"type\": \"Ongoing\",\n    \"value\": 50000\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients"]
+            }
+          }
+        },
+        {
+          "name": "Update Client",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companySize\": \"Large (201-1000)\",\n  \"partnership\": {\n    \"status\": \"Completed\",\n    \"value\": 75000\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/clients/CLIENT_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients", "CLIENT_ID"]
+            }
+          }
+        },
+        {
+          "name": "Delete Client",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/clients/CLIENT_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["clients", "CLIENT_ID"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blog",
+      "item": [
+        {
+          "name": "Get All Blog Posts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/blog?published=true&featured=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["blog"],
+              "query": [
+                {"key": "published", "value": "true"},
+                {"key": "featured", "value": "true"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Blog by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/blog/BLOG_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["blog", "BLOG_ID"]
+            }
+          }
+        },
+        {
+          "name": "Get Blog by Slug",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/blog/slug/blog-post-slug",
+              "host": ["{{baseUrl}}"],
+              "path": ["blog", "slug", "blog-post-slug"]
+            }
+          }
+        },
+        {
+          "name": "Create Blog Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"The Future of Web Development\",\n  \"author\": \"AUTHOR_TEAM_MEMBER_ID\",\n  \"content\": \"<p>Web development is constantly evolving with new technologies and frameworks...</p>\",\n  \"excerpt\": \"Exploring the latest trends in web development\",\n  \"thumbnail\": \"https://res.cloudinary.com/your-cloud/blog-thumb.jpg\",\n  \"images\": [\"https://res.cloudinary.com/your-cloud/blog-image.jpg\"],\n  \"tags\": [\"web development\", \"technology\", \"trends\"],\n  \"category\": \"Technology\",\n  \"published\": true,\n  \"featured\": true,\n  \"publishedAt\": \"2023-10-01T10:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/blog",
+              "host": ["{{baseUrl}}"],
+              "path": ["blog"]
+            }
+          }
+        },
+        {
+          "name": "Update Blog Post",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"featured\": false,\n  \"tags\": [\"web development\", \"technology\", \"trends\", \"javascript\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/blog/BLOG_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["blog", "BLOG_ID"]
+            }
+          }
+        },
+        {
+          "name": "Delete Blog Post",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/blog/BLOG_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["blog", "BLOG_ID"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Testimonials",
+      "item": [
+        {
+          "name": "Get All Testimonials",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/testimonials?approved=true&featured=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["testimonials"],
+              "query": [
+                {"key": "approved", "value": "true"},
+                {"key": "featured", "value": "true"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Testimonial by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/testimonials/TESTIMONIAL_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["testimonials", "TESTIMONIAL_ID"]
+            }
+          }
+        },
+        {
+          "name": "Create Testimonial",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientName\": \"Sarah Johnson\",\n  \"clientCompany\": \"Johnson Enterprises\",\n  \"clientDesignation\": \"CEO\",\n  \"clientImage\": \"https://res.cloudinary.com/your-cloud/client-photo.jpg\",\n  \"clientEmail\": \"sarah@johnsonent.com\",\n  \"quote\": \"Working with this team was an exceptional experience. They delivered exactly what we needed on time and within budget.\",\n  \"rating\": 5,\n  \"featured\": true,\n  \"approved\": true,\n  \"serviceCategory\": \"Web Development\",\n  \"location\": {\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"country\": \"USA\"\n  },\n  \"source\": \"Website Form\",\n  \"dateGiven\": \"2023-09-15\",\n  \"verified\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/testimonials",
+              "host": ["{{baseUrl}}"],
+              "path": ["testimonials"]
+            }
+          }
+        },
+        {
+          "name": "Update Testimonial",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"approved\": true,\n  \"verified\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/testimonials/TESTIMONIAL_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["testimonials", "TESTIMONIAL_ID"]
+            }
+          }
+        },
+        {
+          "name": "Delete Testimonial",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/testimonials/TESTIMONIAL_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["testimonials", "TESTIMONIAL_ID"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "item": [
+        {
+          "name": "Submit Contact Form",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Michael Brown\",\n  \"email\": \"michael@example.com\",\n  \"phone\": \"+1-555-0199\",\n  \"subject\": \"Website Development Inquiry\",\n  \"message\": \"I'm interested in developing a new website for my business. Can we schedule a consultation?\",\n  \"service\": \"Web Development\",\n  \"budget\": \"$5000-$10000\",\n  \"timeline\": \"2-3 months\",\n  \"source\": \"Website\",\n  \"urgency\": \"Medium\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contact",
+              "host": ["{{baseUrl}}"],
+              "path": ["contact"]
+            }
+          }
+        },
+        {
+          "name": "Get All Contact Submissions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/contact?urgency=High",
+              "host": ["{{baseUrl}}"],
+              "path": ["contact"],
+              "query": [
+                {"key": "urgency", "value": "High"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Contact by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/contact/CONTACT_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["contact", "CONTACT_ID"]
+            }
+          }
+        },
+        {
+          "name": "Update Contact Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\",\n  \"notes\": \"Contacted client, scheduled meeting for next week\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contact/CONTACT_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["contact", "CONTACT_ID"]
+            }
+          }
+        },
+        {
+          "name": "Delete Contact",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/contact/CONTACT_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["contact", "CONTACT_ID"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Chat (Public)",
+      "item": [
+        {
+          "name": "Chat with AI",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"What services does your company offer?\",\n  \"context\": \"I'm interested in web development\",\n  \"sessionId\": \"session_123\",\n  \"temperature\": 0.7\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/chatbot",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "chatbot"]
+            }
+          }
+        },
+        {
+          "name": "AI Assistant",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Can you help me understand your development process?\",\n  \"context\": \"Looking for a development partner\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/assistant",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "assistant"]
+            }
+          }
+        },
+        {
+          "name": "AI Status",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/ai/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "status"]
+            }
+          }
+        },
+        {
+          "name": "AI Feedback",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conversationId\": \"conv_123\",\n  \"rating\": 5,\n  \"feedback\": \"Very helpful AI assistant\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/feedback",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "feedback"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Global Search",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/search?q=web development&type=all",
+              "host": ["{{baseUrl}}"],
+              "path": ["search"],
+              "query": [
+                {"key": "q", "value": "web development"},
+                {"key": "type", "value": "all"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Services",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/search/services?q=mobile&category=Mobile Development",
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "services"],
+              "query": [
+                {"key": "q", "value": "mobile"},
+                {"key": "category", "value": "Mobile Development"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Projects",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/search/projects?q=ecommerce&status=Completed",
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "projects"],
+              "query": [
+                {"key": "q", "value": "ecommerce"},
+                {"key": "status", "value": "Completed"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Team Members",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/search/team-members?q=javascript&skills=React",
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "team-members"],
+              "query": [
+                {"key": "q", "value": "javascript"},
+                {"key": "skills", "value": "React"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Blog Posts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/search/blog?q=technology&category=Technology",
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "blog"],
+              "query": [
+                {"key": "q", "value": "technology"},
+                {"key": "category", "value": "Technology"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teams",
+      "item": [
+        {
+          "name": "Get All Teams",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/teams",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams"]
+            }
+          }
+        },
+        {
+          "name": "Get Team by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/teams/TEAM_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams", "TEAM_ID"]
+            }
+          }
+        },
+        {
+          "name": "Create Team",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Frontend Development Team\",\n  \"description\": \"Specialized team focusing on frontend technologies\",\n  \"lead\": \"TEAM_MEMBER_ID\",\n  \"members\": [\"MEMBER_ID_1\", \"MEMBER_ID_2\"],\n  \"projects\": [\"PROJECT_ID_1\"],\n  \"status\": \"Active\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teams",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams"]
+            }
+          }
+        },
+        {
+          "name": "Update Team",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated team description\",\n  \"status\": \"Active\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/teams/TEAM_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams", "TEAM_ID"]
+            }
+          }
+        },
+        {
+          "name": "Delete Team",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/teams/TEAM_ID",
+              "host": ["{{baseUrl}}"],
+              "path": ["teams", "TEAM_ID"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testimonials API Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
+        .response-area {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .method-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .method-get { background: #d4edda; color: #155724; }
+        .method-post { background: #cce5ff; color: #004085; }
+        .method-put { background: #fff3cd; color: #856404; }
+        .method-delete { background: #f8d7da; color: #721c24; }
+        
+        .token-input {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .rating-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .star-rating {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .star {
+            font-size: 1.5rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .star.active {
+            color: #ffc107;
+        }
+        
+        .star:hover {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⭐ Testimonials API Testing</h1>
+            <p>Test client testimonials and feedback management</p>
+        </div>
+        
+        <div class="nav">
+            <a href="index.html">← Back to Dashboard</a>
+        </div>
+        
+        <div class="content">
+            <!-- Auth Token Input -->
+            <div class="token-input">
+                <label for="authToken">Authorization Token (required for protected routes):</label>
+                <input type="text" id="authToken" placeholder="Enter JWT token from login" style="margin-top: 10px;">
+            </div>
+            
+            <!-- Get All Testimonials -->
+            <div class="test-section">
+                <h3>Get All Testimonials</h3>
+                <span class="method-tag method-get">GET /api/v1/testimonials</span>
+                
+                <button class="btn" onclick="getAllTestimonials()">Get All Testimonials</button>
+                <button class="btn btn-secondary" onclick="clearResponse('getAllResponse')">Clear</button>
+                
+                <div id="getAllResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Create Testimonial -->
+            <div class="test-section">
+                <h3>Create Testimonial</h3>
+                <span class="method-tag method-post">POST /api/v1/testimonials</span>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Client Name:</label>
+                        <input type="text" id="createClientName" value="Sarah Johnson">
+                    </div>
+                    <div class="form-group">
+                        <label>Company:</label>
+                        <input type="text" id="createCompany" value="TechStartup Inc.">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Position:</label>
+                        <input type="text" id="createPosition" value="CEO & Founder">
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="createEmail" value="sarah@techstartup.com">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Testimonial Text:</label>
+                    <textarea id="createTestimonial">Working with this team has been an incredible experience. They delivered our web application on time and exceeded all our expectations. The attention to detail and professionalism throughout the project was outstanding. I highly recommend their services to anyone looking for top-quality web development.</textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rating:</label>
+                        <div class="rating-group">
+                            <div class="star-rating" id="createRating">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star active" data-rating="5">★</span>
+                            </div>
+                            <input type="hidden" id="createRatingValue" value="5">
+                            <span id="ratingText">5 stars</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Type:</label>
+                        <select id="createProjectType">
+                            <option value="Web Development" selected>Web Development</option>
+                            <option value="Mobile App">Mobile App</option>
+                            <option value="E-commerce">E-commerce</option>
+                            <option value="Custom Software">Custom Software</option>
+                            <option value="API Development">API Development</option>
+                            <option value="Consulting">Consulting</option>
+                            <option value="UI/UX Design">UI/UX Design</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Website:</label>
+                        <input type="url" id="createWebsite" value="https://techstartup.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Featured:</label>
+                        <select id="createFeatured">
+                            <option value="true" selected>Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="createTestimonial()">Create Testimonial</button>
+                <button class="btn btn-secondary" onclick="clearResponse('createResponse')">Clear</button>
+                
+                <div id="createResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Get Testimonial by ID -->
+            <div class="test-section">
+                <h3>Get Testimonial by ID</h3>
+                <span class="method-tag method-get">GET /api/v1/testimonials/:id</span>
+                
+                <div class="form-group">
+                    <label>Testimonial ID:</label>
+                    <input type="text" id="getTestimonialId" placeholder="Enter testimonial ID">
+                </div>
+                
+                <button class="btn" onclick="getTestimonialById()">Get Testimonial</button>
+                <button class="btn btn-secondary" onclick="clearResponse('getByIdResponse')">Clear</button>
+                
+                <div id="getByIdResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Update Testimonial -->
+            <div class="test-section">
+                <h3>Update Testimonial</h3>
+                <span class="method-tag method-put">PUT /api/v1/testimonials/:id</span>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Testimonial ID:</label>
+                        <input type="text" id="updateTestimonialId" placeholder="Enter testimonial ID">
+                    </div>
+                    <div class="form-group">
+                        <label>Client Name:</label>
+                        <input type="text" id="updateClientName" value="Sarah Johnson (Updated)">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Testimonial Text:</label>
+                    <textarea id="updateTestimonial">This updated testimonial reflects our continued satisfaction with the exceptional service provided. The ongoing support and maintenance have been exemplary, and we continue to recommend this team to our partners and colleagues.</textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rating:</label>
+                        <div class="rating-group">
+                            <div class="star-rating" id="updateRating">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star active" data-rating="5">★</span>
+                            </div>
+                            <input type="hidden" id="updateRatingValue" value="5">
+                            <span id="updateRatingText">5 stars</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Featured:</label>
+                        <select id="updateFeatured">
+                            <option value="true" selected>Yes</option>
+                            <option value="false">No</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="updateTestimonial()">Update Testimonial</button>
+                <button class="btn btn-secondary" onclick="clearResponse('updateResponse')">Clear</button>
+                
+                <div id="updateResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Delete Testimonial -->
+            <div class="test-section">
+                <h3>Delete Testimonial</h3>
+                <span class="method-tag method-delete">DELETE /api/v1/testimonials/:id</span>
+                
+                <div class="form-group">
+                    <label>Testimonial ID:</label>
+                    <input type="text" id="deleteTestimonialId" placeholder="Enter testimonial ID">
+                </div>
+                
+                <button class="btn btn-danger" onclick="deleteTestimonial()">Delete Testimonial</button>
+                <button class="btn btn-secondary" onclick="clearResponse('deleteResponse')">Clear</button>
+                
+                <div id="deleteResponse" class="response-area" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000/api/v1';
+
+        function getAuthHeaders() {
+            const token = document.getElementById('authToken').value;
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        // Rating functionality
+        function setupRatingStars() {
+            const ratingGroups = ['createRating', 'updateRating'];
+            
+            ratingGroups.forEach(groupId => {
+                const stars = document.querySelectorAll(`#${groupId} .star`);
+                const valueInput = document.getElementById(groupId.replace('Rating', 'RatingValue'));
+                const textSpan = document.getElementById(groupId.replace('Rating', 'RatingText') || groupId + 'Text');
+                
+                stars.forEach(star => {
+                    star.addEventListener('click', () => {
+                        const rating = parseInt(star.dataset.rating);
+                        valueInput.value = rating;
+                        if (textSpan) textSpan.textContent = `${rating} star${rating > 1 ? 's' : ''}`;
+                        
+                        // Update visual stars
+                        stars.forEach((s, index) => {
+                            if (index < rating) {
+                                s.classList.add('active');
+                            } else {
+                                s.classList.remove('active');
+                            }
+                        });
+                    });
+                });
+            });
+        }
+
+        async function getAllTestimonials() {
+            try {
+                const response = await fetch(`${BASE_URL}/testimonials`, {
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('getAllResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('getAllResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function createTestimonial() {
+            const data = {
+                clientName: document.getElementById('createClientName').value,
+                company: document.getElementById('createCompany').value,
+                position: document.getElementById('createPosition').value,
+                email: document.getElementById('createEmail').value,
+                testimonial: document.getElementById('createTestimonial').value,
+                rating: parseInt(document.getElementById('createRatingValue').value),
+                projectType: document.getElementById('createProjectType').value,
+                website: document.getElementById('createWebsite').value,
+                isFeatured: document.getElementById('createFeatured').value === 'true'
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/testimonials`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                displayResponse('createResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+
+                // Auto-fill ID fields with created testimonial ID
+                if (result.success && result.data && result.data._id) {
+                    document.getElementById('getTestimonialId').value = result.data._id;
+                    document.getElementById('updateTestimonialId').value = result.data._id;
+                    document.getElementById('deleteTestimonialId').value = result.data._id;
+                }
+            } catch (error) {
+                displayResponse('createResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function getTestimonialById() {
+            const id = document.getElementById('getTestimonialId').value;
+            if (!id) {
+                alert('Please enter a testimonial ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/testimonials/${id}`, {
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('getByIdResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('getByIdResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function updateTestimonial() {
+            const id = document.getElementById('updateTestimonialId').value;
+            if (!id) {
+                alert('Please enter a testimonial ID');
+                return;
+            }
+
+            const data = {
+                clientName: document.getElementById('updateClientName').value,
+                testimonial: document.getElementById('updateTestimonial').value,
+                rating: parseInt(document.getElementById('updateRatingValue').value),
+                isFeatured: document.getElementById('updateFeatured').value === 'true'
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/testimonials/${id}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                displayResponse('updateResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('updateResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function deleteTestimonial() {
+            const id = document.getElementById('deleteTestimonialId').value;
+            if (!id) {
+                alert('Please enter a testimonial ID');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this testimonial?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/testimonials/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('deleteResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('deleteResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        function displayResponse(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = JSON.stringify(data, null, 2);
+        }
+
+        function clearResponse(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+
+        // Initialize rating stars when page loads
+        window.addEventListener('DOMContentLoaded', setupRatingStars);
+    </script>
+</body>
+</html>

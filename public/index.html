@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Portfolio API Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .routes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .route-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .route-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+        
+        .route-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .route-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .route-card .icon {
+            font-size: 1.5rem;
+        }
+        
+        .route-card p {
+            color: #6c757d;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .route-card .methods {
+            margin-bottom: 20px;
+        }
+        
+        .method-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .method-get { background: #d4edda; color: #155724; }
+        .method-post { background: #cce5ff; color: #004085; }
+        .method-put { background: #fff3cd; color: #856404; }
+        .method-patch { background: #f8d7da; color: #721c24; }
+        .method-delete { background: #f5c6cb; color: #721c24; }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .api-info {
+            background: #e3f2fd;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid #2196f3;
+            margin-bottom: 30px;
+        }
+        
+        .api-info h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .api-info p {
+            color: #424242;
+            line-height: 1.6;
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 API Testing Dashboard</h1>
+            <p>Company Portfolio Backend - Complete API Testing Suite</p>
+            <div class="status-indicator"></div>
+        </div>
+        
+        <div class="content">
+            <div class="api-info">
+                <h3>📡 API Information</h3>
+                <p><strong>Base URL:</strong> http://localhost:5000/api/v1</p>
+                <p><strong>Server Status:</strong> <span style="color: #4caf50; font-weight: 600;">Running</span></p>
+                <p><strong>Database:</strong> MongoDB Atlas Connected</p>
+                <p><strong>AI Service:</strong> Gemini 1.5 Flash Active</p>
+            </div>
+            
+            <div class="routes-grid">
+                <!-- Authentication Routes -->
+                <div class="route-card">
+                    <h3><span class="icon">🔐</span>Authentication</h3>
+                    <p>User registration, login, logout, and token management.</p>
+                    <div class="methods">
+                        <span class="method-tag method-post">POST</span>
+                        <span class="method-tag method-get">GET</span>
+                    </div>
+                    <a href="auth.html" class="test-btn">Test Authentication</a>
+                </div>
+                
+                <!-- Team Members Routes -->
+                <div class="route-card">
+                    <h3><span class="icon">👥</span>Team Members</h3>
+                    <p>Manage team members, skills, experience, and education.</p>
+                    <div class="methods">
+                        <span class="method-tag method-get">GET</span>
+                        <span class="method-tag method-post">POST</span>
+                        <span class="method-tag method-put">PUT</span>
+                        <span class="method-tag method-delete">DELETE</span>
+                    </div>
+                    <a href="team-members.html" class="test-btn">Test Team Members</a>
+                </div>
+                
+                <!-- Projects Routes -->
+                <div class="route-card">
+                    <h3><span class="icon">📦</span>Projects</h3>
+                    <p>Project portfolio management, categories, and client assignments.</p>
+                    <div class="methods">
+                        <span class="method-tag method-get">GET</span>
+                        <span class="method-tag method-post">POST</span>
+                        <span class="method-tag method-put">PUT</span>
+                        <span class="method-tag method-delete">DELETE</span>
+                    </div>
+                    <a href="projects.html" class="test-btn">Test Projects</a>
+                </div>
+                
+                <!-- Services Routes -->
+                <div class="route-card">
+                    <h3><span class="icon">🔧</span>Services</h3>
+                    <p>Company services, categories, pricing, and descriptions.</p>
+                    <div class="methods">
+                        <span class="method-tag method-get">GET</span>
+                        <span class="method-tag method-post">POST</span>
+                        <span class="method-tag method-put">PUT</span>
+                        <span class="method-tag method-delete">DELETE</span>
+                    </div>
+                    <a href="services.html" class="test-btn">Test Services</a>
+                </div>
+                
+                <!-- Clients Routes -->
+                <div class="route-card">
+                    <h3><span class="icon">🏢</span>Clients</h3>
+                    <p>Client management, contact information, and project assignments.</p>
+                    <div class="methods">
+                        <span class="method-tag method-get">GET</span>
+                        <span class="method-tag method-post">POST</span>
+                        <span class="method-tag method-put">PUT</span>
+                        <span class="method-tag method-delete">DELETE</span>
+                    </div>
+                    <a href="clients.html" class="test-btn">Test Clients</a>
+                </div>
+                
+                <!-- Blog Routes -->
+                <div class="route-card">
+                    <h3><span class="icon">📝</span>Blog Posts</h3>
+                    <p>Blog management, categories, publishing, and author assignments.</p>
+                    <div class="methods">
+                        <span class="method-tag method-get">GET</span>
+                        <span class="method-tag method-post">POST</span>
+                        <span class="method-tag method-put">PUT</span>
+                        <span class="method-tag method-delete">DELETE</span>
+                    </div>
+                    <a href="blog.html" class="test-btn">Test Blog Posts</a>
+                </div>
+                
+                <!-- Testimonials Routes -->
+                <div class="route-card">
+                    <h3><span class="icon">⭐</span>Testimonials</h3>
+                    <p>Client testimonials, ratings, and feedback management.</p>
+                    <div class="methods">
+                        <span class="method-tag method-get">GET</span>
+                        <span class="method-tag method-post">POST</span>
+                        <span class="method-tag method-put">PUT</span>
+                        <span class="method-tag method-delete">DELETE</span>
+                    </div>
+                    <a href="testimonials.html" class="test-btn">Test Testimonials</a>
+                </div>
+                
+                <!-- Contact Routes -->
+                <div class="route-card">
+                    <h3><span class="icon">📧</span>Contact</h3>
+                    <p>Contact form submissions and inquiry management.</p>
+                    <div class="methods">
+                        <span class="method-tag method-post">POST</span>
+                        <span class="method-tag method-get">GET</span>
+                    </div>
+                    <a href="contact.html" class="test-btn">Test Contact</a>
+                </div>
+                
+                <!-- AI Routes -->
+                <div class="route-card">
+                    <h3><span class="icon">🤖</span>AI Assistant</h3>
+                    <p>AI chat, recommendations, and intelligent assistance.</p>
+                    <div class="methods">
+                        <span class="method-tag method-post">POST</span>
+                        <span class="method-tag method-get">GET</span>
+                    </div>
+                    <a href="ai.html" class="test-btn">Test AI Features</a>
+                </div>
+                
+                <!-- File Upload Routes -->
+                <div class="route-card">
+                    <h3><span class="icon">📁</span>File Upload</h3>
+                    <p>Cloudinary file uploads, image processing, and media management.</p>
+                    <div class="methods">
+                        <span class="method-tag method-post">POST</span>
+                        <span class="method-tag method-delete">DELETE</span>
+                    </div>
+                    <a href="file-upload.html" class="test-btn">Test File Upload</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🎯 Company Portfolio Backend API Testing Suite | Built for comprehensive endpoint testing</p>
+        </div>
+    </div>
+</body>
+</html>

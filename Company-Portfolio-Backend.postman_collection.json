@@ -1,0 +1,1236 @@
+{
+	"info": {
+		"_postman_id": "12345678-1234-1234-1234-123456789abc",
+		"name": "Company Portfolio Backend API",
+		"description": "Comprehensive API collection for testing all endpoints of the Company Portfolio Backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "Health & System",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						}
+					}
+				},
+				{
+					"name": "API Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('authToken', responseJson.token);",
+									"    pm.environment.set('userId', responseJson.data.user._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"Admin\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('authToken', responseJson.token);",
+									"    pm.environment.set('userId', responseJson.data.user._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "me"]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "logout"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Services",
+			"item": [
+				{
+					"name": "Get All Services",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/services",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "services"]
+						}
+					}
+				},
+				{
+					"name": "Create Service",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('serviceId', responseJson.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Web Development\",\n  \"description\": \"Complete web development services including frontend and backend development\",\n  \"shortDescription\": \"Professional web development solutions\",\n  \"category\": \"Web Development\",\n  \"featured\": true,\n  \"tags\": [\"React\", \"Node.js\", \"MongoDB\"],\n  \"priceRange\": \"$2000 - $10000\",\n  \"benefits\": [\n    {\n      \"title\": \"Responsive Design\",\n      \"description\": \"Mobile-first responsive web applications\"\n    },\n    {\n      \"title\": \"Fast Performance\",\n      \"description\": \"Optimized for speed and performance\"\n    }\n  ],\n  \"process\": [\n    {\n      \"stepNumber\": 1,\n      \"title\": \"Requirements Analysis\",\n      \"description\": \"Understanding your business needs\"\n    },\n    {\n      \"stepNumber\": 2,\n      \"title\": \"Design & Development\",\n      \"description\": \"Creating your web solution\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/services",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "services"]
+						}
+					}
+				},
+				{
+					"name": "Get Service by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/services/{{serviceId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "services", "{{serviceId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Service",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Advanced Web Development\",\n  \"description\": \"Complete web development services with advanced features\",\n  \"priceRange\": \"$3000 - $15000\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/services/{{serviceId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "services", "{{serviceId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Featured Services",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/services/featured",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "services", "featured"]
+						}
+					}
+				},
+				{
+					"name": "Search Services",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/services/search?q=web",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "services", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "web"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Service",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/services/{{serviceId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "services", "{{serviceId}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Projects",
+			"item": [
+				{
+					"name": "Get All Projects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/projects",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "projects"]
+						}
+					}
+				},
+				{
+					"name": "Create Project",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('projectId', responseJson.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"E-commerce Platform\",\n  \"shortDescription\": \"Modern e-commerce platform with payment integration\",\n  \"fullDescription\": \"A comprehensive e-commerce platform built with React and Node.js, featuring user authentication, product catalog, shopping cart, and secure payment processing.\",\n  \"category\": \"E-commerce\",\n  \"featured\": true,\n  \"tags\": [\"React\", \"Node.js\", \"Stripe\", \"MongoDB\"],\n  \"startDate\": \"2024-01-01\",\n  \"estimatedCompletionDate\": \"2024-06-01\",\n  \"status\": \"In Progress\",\n  \"priority\": \"High\",\n  \"technologies\": [\"React\", \"Node.js\", \"Express\", \"MongoDB\", \"Stripe\"],\n  \"budget\": \"$25,000\",\n  \"challenges\": [\n    {\n      \"challenge\": \"Payment Integration\",\n      \"solution\": \"Implemented Stripe for secure payment processing\"\n    }\n  ],\n  \"results\": [\n    {\n      \"metric\": \"Performance\",\n      \"value\": \"95% Page Speed\",\n      \"description\": \"Optimized loading times\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/projects",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "projects"]
+						}
+					}
+				},
+				{
+					"name": "Get Project by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/projects/{{projectId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "projects", "{{projectId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Project",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"Completed\",\n  \"completionDate\": \"2024-05-15\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/projects/{{projectId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "projects", "{{projectId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Featured Projects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/projects/featured",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "projects", "featured"]
+						}
+					}
+				},
+				{
+					"name": "Get Recent Projects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/projects/recent?limit=5",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "projects", "recent"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Project Analytics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/projects/analytics",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "projects", "analytics"]
+						}
+					}
+				},
+				{
+					"name": "Get Project Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/projects/stats",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "projects", "stats"]
+						}
+					}
+				},
+				{
+					"name": "Search Projects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/projects/search?q=ecommerce",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "projects", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "ecommerce"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Projects by Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/projects/category/E-commerce",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "projects", "category", "E-commerce"]
+						}
+					}
+				},
+				{
+					"name": "Get Projects by Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/projects/status/In Progress",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "projects", "status", "In Progress"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Team Members",
+			"item": [
+				{
+					"name": "Get All Team Members",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/team-members",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "team-members"]
+						}
+					}
+				},
+				{
+					"name": "Create Team Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('teamMemberId', responseJson.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@company.com\",\n  \"phone\": \"+1234567890\",\n  \"position\": \"Senior Full Stack Developer\",\n  \"department\": \"Development\",\n  \"location\": {\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"country\": \"USA\"\n  },\n  \"bio\": \"Experienced full-stack developer with expertise in modern web technologies\",\n  \"skills\": [\n    {\n      \"name\": \"JavaScript\",\n      \"level\": \"Expert\",\n      \"yearsOfExperience\": 5\n    },\n    {\n      \"name\": \"React\",\n      \"level\": \"Expert\",\n      \"yearsOfExperience\": 4\n    },\n    {\n      \"name\": \"Node.js\",\n      \"level\": \"Advanced\",\n      \"yearsOfExperience\": 3\n    }\n  ],\n  \"socialLinks\": {\n    \"linkedin\": \"https://linkedin.com/in/johndoe\",\n    \"github\": \"https://github.com/johndoe\",\n    \"twitter\": \"https://twitter.com/johndoe\"\n  },\n  \"joinDate\": \"2022-01-15\",\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/team-members",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "team-members"]
+						}
+					}
+				},
+				{
+					"name": "Get Team Member by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/team-members/{{teamMemberId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "team-members", "{{teamMemberId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Team Member",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"position\": \"Lead Full Stack Developer\",\n  \"bio\": \"Senior full-stack developer and team lead with expertise in modern web technologies\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/team-members/{{teamMemberId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "team-members", "{{teamMemberId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Team Members by Department",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/team-members/department/Development",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "team-members", "department", "Development"]
+						}
+					}
+				},
+				{
+					"name": "Get Team Members by Skill",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/team-members/skill/JavaScript",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "team-members", "skill", "JavaScript"]
+						}
+					}
+				},
+				{
+					"name": "Search Team Members",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/team-members/search?q=developer",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "team-members", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "developer"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Teams",
+			"item": [
+				{
+					"name": "Get All Teams",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/teams",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "teams"]
+						}
+					}
+				},
+				{
+					"name": "Create Team",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('teamId', responseJson.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Frontend Development Team\",\n  \"description\": \"Responsible for user interface and user experience development\",\n  \"department\": \"Development\",\n  \"location\": {\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"country\": \"USA\"\n  },\n  \"teamLead\": \"{{teamMemberId}}\",\n  \"specializations\": [\"React\", \"Vue.js\", \"Angular\", \"UI/UX Design\"],\n  \"isActive\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/teams",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "teams"]
+						}
+					}
+				},
+				{
+					"name": "Get Team by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/teams/{{teamId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "teams", "{{teamId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Team",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Advanced frontend development team specializing in modern frameworks and user experience\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/teams/{{teamId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "teams", "{{teamId}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Clients",
+			"item": [
+				{
+					"name": "Get All Clients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/clients",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "clients"]
+						}
+					}
+				},
+				{
+					"name": "Create Client",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('clientId', responseJson.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"TechCorp Solutions\",\n  \"industry\": \"Technology\",\n  \"description\": \"Leading technology solutions provider\",\n  \"email\": \"contact@techcorp.com\",\n  \"phone\": \"+1-555-0123\",\n  \"website\": \"https://techcorp.com\",\n  \"address\": {\n    \"street\": \"123 Tech Street\",\n    \"city\": \"San Francisco\",\n    \"state\": \"CA\",\n    \"zipCode\": \"94105\",\n    \"country\": \"USA\"\n  },\n  \"contactPerson\": {\n    \"name\": \"Jane Smith\",\n    \"title\": \"CTO\",\n    \"email\": \"jane.smith@techcorp.com\",\n    \"phone\": \"+1-555-0124\"\n  },\n  \"companySize\": \"Medium (50-200)\",\n  \"status\": \"Active\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/clients",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "clients"]
+						}
+					}
+				},
+				{
+					"name": "Get Client by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/clients/{{clientId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "clients", "{{clientId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Client",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"Active\",\n  \"companySize\": \"Large (200+)\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/clients/{{clientId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "clients", "{{clientId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Clients by Industry",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/clients/industry/Technology",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "clients", "industry", "Technology"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Blog",
+			"item": [
+				{
+					"name": "Get All Blog Posts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/blog",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "blog"]
+						}
+					}
+				},
+				{
+					"name": "Create Blog Post",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('blogId', responseJson.data._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"The Future of Web Development\",\n  \"content\": \"Web development is rapidly evolving with new technologies and frameworks. In this article, we explore the latest trends and technologies that are shaping the future of web development.\",\n  \"excerpt\": \"Exploring the latest trends in web development and what they mean for the future.\",\n  \"category\": \"Technology\",\n  \"tags\": [\"Web Development\", \"Technology\", \"Future\", \"Trends\"],\n  \"author\": \"{{userId}}\",\n  \"featured\": true,\n  \"status\": \"Published\",\n  \"seo\": {\n    \"metaTitle\": \"Future of Web Development - Latest Trends\",\n    \"metaDescription\": \"Discover the latest trends and technologies shaping the future of web development.\",\n    \"keywords\": [\"web development\", \"future\", \"trends\", \"technology\"]\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/blog",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "blog"]
+						}
+					}
+				},
+				{
+					"name": "Get Blog Post by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/blog/{{blogId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "blog", "{{blogId}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Blog Post",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"The Future of Web Development - Updated\",\n  \"featured\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/blog/{{blogId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "blog", "{{blogId}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Featured Blog Posts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/blog/featured",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "blog", "featured"]
+						}
+					}
+				},
+				{
+					"name": "Search Blog Posts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/blog/search?q=web development",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "blog", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "web development"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Testimonials",
+			"item": [
+				{
+					"name": "Get All Testimonials",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/testimonials",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "testimonials"]
+						}
+					}
+				},
+				{
+					"name": "Create Testimonial",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"clientName\": \"Sarah Johnson\",\n  \"clientTitle\": \"Marketing Director\",\n  \"clientCompany\": \"TechCorp Solutions\",\n  \"testimonialText\": \"Working with this team was an exceptional experience. They delivered a high-quality web application that exceeded our expectations.\",\n  \"rating\": 5,\n  \"projectTitle\": \"E-commerce Platform\",\n  \"serviceUsed\": \"{{serviceId}}\",\n  \"clientEmail\": \"sarah.johnson@techcorp.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/testimonials",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "testimonials"]
+						}
+					}
+				},
+				{
+					"name": "Get Featured Testimonials",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/testimonials/featured",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "testimonials", "featured"]
+						}
+					}
+				},
+				{
+					"name": "Get Testimonials by Rating",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/testimonials/rating/5",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "testimonials", "rating", "5"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Contact",
+			"item": [
+				{
+					"name": "Submit Contact Form",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Mike Wilson\",\n  \"email\": \"mike.wilson@example.com\",\n  \"phone\": \"+1-555-0199\",\n  \"company\": \"Wilson Enterprises\",\n  \"subject\": \"Web Development Inquiry\",\n  \"message\": \"I'm interested in your web development services. Could we schedule a consultation?\",\n  \"source\": \"Website\",\n  \"projectType\": \"Web Development\",\n  \"budget\": \"$10,000 - $25,000\",\n  \"timeline\": \"3-6 months\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/contact",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "contact"]
+						}
+					}
+				},
+				{
+					"name": "Get All Contact Submissions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/contact",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "contact"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "AI Assistant",
+			"item": [
+				{
+					"name": "Chat with AI",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"What services do you offer?\",\n  \"context\": \"general\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/ai/chat",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "ai", "chat"]
+						}
+					}
+				},
+				{
+					"name": "Business Assistant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"query\": \"Generate a project proposal for e-commerce development\",\n  \"type\": \"proposal\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/ai/business-assistant",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "ai", "business-assistant"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Global Search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/search?q=web development&type=all",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "web development"
+								},
+								{
+									"key": "type",
+									"value": "all"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Services Only",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/search?q=development&type=services",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "development"
+								},
+								{
+									"key": "type",
+									"value": "services"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Smart Search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/search/smart?q=need a mobile app for ecommerce",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "search", "smart"],
+							"query": [
+								{
+									"key": "q",
+									"value": "need a mobile app for ecommerce"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-refresh token if expired",
+					"const token = pm.environment.get('authToken');",
+					"if (token) {",
+					"    const tokenParts = token.split('.');",
+					"    if (tokenParts.length === 3) {",
+					"        const payload = JSON.parse(atob(tokenParts[1]));",
+					"        const now = Math.floor(Date.now() / 1000);",
+					"        if (payload.exp && payload.exp < now + 300) {",
+					"            console.log('Token will expire soon, consider refreshing');",
+					"        }",
+					"    }",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test to log response",
+					"if (pm.response.code >= 400) {",
+					"    console.log('Error Response:', pm.response.text());",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "serviceId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "projectId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "teamMemberId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "teamId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "clientId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "blogId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Members API Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .nav {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
+        .response-area {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .method-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .method-get { background: #d4edda; color: #155724; }
+        .method-post { background: #cce5ff; color: #004085; }
+        .method-put { background: #fff3cd; color: #856404; }
+        .method-delete { background: #f8d7da; color: #721c24; }
+        
+        .token-input {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .social-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 Team Members API Testing</h1>
+            <p>Test team member management operations</p>
+        </div>
+        
+        <div class="nav">
+            <a href="index.html">← Back to Dashboard</a>
+        </div>
+        
+        <div class="content">
+            <!-- Auth Token Input -->
+            <div class="token-input">
+                <label for="authToken">Authorization Token (required for protected routes):</label>
+                <input type="text" id="authToken" placeholder="Enter JWT token from login" style="margin-top: 10px;">
+            </div>
+            
+            <!-- Get All Team Members -->
+            <div class="test-section">
+                <h3>Get All Team Members</h3>
+                <span class="method-tag method-get">GET /api/v1/team</span>
+                
+                <button id="getAllMembersBtn" class="btn">Get All Members</button>
+                <button id="clearAllBtn" class="btn btn-secondary">Clear</button>
+                <button id="testJSBtn" class="btn" style="background-color: #28a745;">Test JavaScript</button>
+                
+                <div id="getAllResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Create Team Member -->
+            <div class="test-section">
+                <h3>Create Team Member</h3>
+                <span class="method-tag method-post">POST /api/v1/team-members</span>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name:</label>
+                        <input type="text" id="createFirstName" value="John">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name:</label>
+                        <input type="text" id="createLastName" value="Doe">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Position:</label>
+                        <input type="text" id="createPosition" value="Senior Developer">
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="createEmail" value="john.doe@company.com">
+                    </div>
+                </div>
+                        <label>Phone:</label>
+                        <input type="text" id="createPhone" value="+1234567890">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Bio:</label>
+                    <textarea id="createBio" placeholder="Team member bio">Experienced developer with 5+ years in full-stack development.</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Skills (comma-separated):</label>
+                    <input type="text" id="createSkills" value="JavaScript, React, Node.js, MongoDB">
+                </div>
+                
+                <h4 style="margin: 20px 0 10px;">Social Links:</h4>
+                <div class="social-links">
+                    <div class="form-group">
+                        <label>LinkedIn:</label>
+                        <input type="url" id="createLinkedin" value="https://linkedin.com/in/johndoe">
+                    </div>
+                    <div class="form-group">
+                        <label>GitHub:</label>
+                        <input type="url" id="createGithub" value="https://github.com/johndoe">
+                    </div>
+                    <div class="form-group">
+                        <label>Twitter:</label>
+                        <input type="url" id="createTwitter" value="https://twitter.com/johndoe">
+                    </div>
+                    <div class="form-group">
+                        <label>Portfolio:</label>
+                        <input type="url" id="createPortfolio" value="https://johndoe.dev">
+                    </div>
+                </div>
+                
+                <button id="createMemberBtn" class="btn">Create Member</button>
+                <button id="clearCreateBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="createResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Get Team Member by ID -->
+            <div class="test-section">
+                <h3>Get Team Member by ID</h3>
+                <span class="method-tag method-get">GET /api/v1/team/:id</span>
+                
+                <div class="form-group">
+                    <label>Member ID:</label>
+                    <input type="text" id="getMemberId" placeholder="Enter team member ID">
+                </div>
+                
+                <button id="getMemberBtn" class="btn">Get Member</button>
+                <button id="clearGetBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="getByIdResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Update Team Member -->
+            <div class="test-section">
+                <h3>Update Team Member</h3>
+                <span class="method-tag method-put">PUT /api/v1/team/:id</span>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Member ID:</label>
+                        <input type="text" id="updateMemberId" placeholder="Enter team member ID">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name:</label>
+                        <input type="text" id="updateFirstName" value="John">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name:</label>
+                        <input type="text" id="updateLastName" value="Smith">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Position:</label>
+                        <input type="text" id="updatePosition" value="Lead Developer">
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="updateEmail" value="john.smith@company.com">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Bio:</label>
+                    <textarea id="updateBio">Updated bio with new achievements and experience.</textarea>
+                </div>
+                
+                <button id="updateMemberBtn" class="btn">Update Member</button>
+                <button id="clearUpdateBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="updateResponse" class="response-area" style="display: none;"></div>
+            </div>
+            
+            <!-- Delete Team Member -->
+            <div class="test-section">
+                <h3>Delete Team Member</h3>
+                <span class="method-tag method-delete">DELETE /api/v1/team/:id</span>
+                
+                <div class="form-group">
+                    <label>Member ID:</label>
+                    <input type="text" id="deleteMemberId" placeholder="Enter team member ID">
+                </div>
+                
+                <button id="deleteMemberBtn" class="btn btn-danger">Delete Member</button>
+                <button id="clearDeleteBtn" class="btn btn-secondary">Clear</button>
+                
+                <div id="deleteResponse" class="response-area" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000/api/v1';
+        
+        // Test function to verify JavaScript is working
+        function testJS() {
+            console.log('JavaScript is working in team-members.html!');
+            alert('JavaScript is working! Check console for more details.');
+            console.log('BASE_URL:', BASE_URL);
+            console.log('Available elements:', {
+                authToken: !!document.getElementById('authToken'),
+                createFirstName: !!document.getElementById('createFirstName'),
+                createLastName: !!document.getElementById('createLastName'),
+                getAllResponse: !!document.getElementById('getAllResponse')
+            });
+        }
+
+        function getAuthHeaders() {
+            console.log('Getting auth headers...');
+            const token = document.getElementById('authToken').value;
+            console.log('Token:', token ? 'Token found' : 'No token');
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+        }
+
+        async function getAllTeamMembers() {
+            console.log('getAllTeamMembers called');
+            try {
+                console.log('Making request to:', `${BASE_URL}/team-members`);
+                const response = await fetch(`${BASE_URL}/team-members`, {
+                    headers: getAuthHeaders()
+                });
+
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Response data:', result);
+                
+                displayResponse('getAllResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                console.error('Error in getAllTeamMembers:', error);
+                displayResponse('getAllResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function createTeamMember() {
+            const skills = document.getElementById('createSkills').value.split(',').map(skill => skill.trim());
+            
+            const data = {
+                firstName: document.getElementById('createFirstName').value,
+                lastName: document.getElementById('createLastName').value,
+                position: document.getElementById('createPosition').value,
+                email: document.getElementById('createEmail').value,
+                phone: document.getElementById('createPhone').value,
+                bio: document.getElementById('createBio').value,
+                skills: skills,
+                socialLinks: {
+                    linkedin: document.getElementById('createLinkedin').value,
+                    github: document.getElementById('createGithub').value,
+                    twitter: document.getElementById('createTwitter').value,
+                    portfolio: document.getElementById('createPortfolio').value
+                }
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/team-members`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                displayResponse('createResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+
+                // Auto-fill ID fields with created member ID
+                if (result.success && result.data && result.data._id) {
+                    document.getElementById('getMemberId').value = result.data._id;
+                    document.getElementById('updateMemberId').value = result.data._id;
+                    document.getElementById('deleteMemberId').value = result.data._id;
+                }
+            } catch (error) {
+                displayResponse('createResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function getTeamMemberById() {
+            const id = document.getElementById('getMemberId').value;
+            if (!id) {
+                alert('Please enter a team member ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/team-members/${id}`, {
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('getByIdResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('getByIdResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function updateTeamMember() {
+            const id = document.getElementById('updateMemberId').value;
+            if (!id) {
+                alert('Please enter a team member ID');
+                return;
+            }
+
+            const data = {
+                firstName: document.getElementById('updateFirstName').value,
+                lastName: document.getElementById('updateLastName').value,
+                position: document.getElementById('updatePosition').value,
+                email: document.getElementById('updateEmail').value,
+                bio: document.getElementById('updateBio').value
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/team-members/${id}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                displayResponse('updateResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('updateResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function deleteTeamMember() {
+            const id = document.getElementById('deleteMemberId').value;
+            if (!id) {
+                alert('Please enter a team member ID');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this team member?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BASE_URL}/team-members/${id}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+
+                const result = await response.json();
+                displayResponse('deleteResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: result
+                });
+            } catch (error) {
+                displayResponse('deleteResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        function displayResponse(elementId, data) {
+            console.log('displayResponse called with:', elementId, data);
+            try {
+                const element = document.getElementById(elementId);
+                if (!element) {
+                    console.error('Element not found:', elementId);
+                    return;
+                }
+                console.log('Displaying response in element:', elementId);
+                element.style.display = 'block';
+                element.innerHTML = JSON.stringify(data, null, 2);
+                console.log('Response displayed successfully');
+            } catch (error) {
+                console.error('Error in displayResponse:', error);
+            }
+        }
+
+        function clearResponse(elementId) {
+            console.log('clearResponse called for:', elementId);
+            try {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.style.display = 'none';
+                    console.log('Response cleared for:', elementId);
+                } else {
+                    console.error('Element not found for clearing:', elementId);
+                }
+            } catch (error) {
+                console.error('Error in clearResponse:', error);
+            }
+        }
+        
+        // Add page load debugging
+        window.onload = function() {
+            console.log('Team members page loaded');
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded for team members page');
+            
+            // Add event listeners for all buttons
+            document.getElementById('getAllMembersBtn').addEventListener('click', getAllTeamMembers);
+            document.getElementById('clearAllBtn').addEventListener('click', () => clearResponse('getAllResponse'));
+            document.getElementById('testJSBtn').addEventListener('click', testJS);
+            
+            document.getElementById('createMemberBtn').addEventListener('click', createTeamMember);
+            document.getElementById('clearCreateBtn').addEventListener('click', () => clearResponse('createResponse'));
+            
+            document.getElementById('getMemberBtn').addEventListener('click', getTeamMemberById);
+            document.getElementById('clearGetBtn').addEventListener('click', () => clearResponse('getByIdResponse'));
+            
+            document.getElementById('updateMemberBtn').addEventListener('click', updateTeamMember);
+            document.getElementById('clearUpdateBtn').addEventListener('click', () => clearResponse('updateResponse'));
+            
+            document.getElementById('deleteMemberBtn').addEventListener('click', deleteTeamMember);
+            document.getElementById('clearDeleteBtn').addEventListener('click', () => clearResponse('deleteResponse'));
+            
+            console.log('Team members event listeners added successfully');
+        });
+    </script>
+</body>
+</html>

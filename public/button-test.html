@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Test - Services & Clients</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Button Functionality Test</h1>
+        
+        <div class="test-section">
+            <h3>✅ Quick Fix Applied</h3>
+            <div class="success">
+                <p><strong>Problem Identified:</strong> Event listeners were trying to find buttons by onclick attributes that were being removed.</p>
+                <p><strong>Solution Applied:</strong> Added unique IDs to all buttons and updated event listeners to use getElementById instead of onclick attribute selectors.</p>
+                <p><strong>Result:</strong> All buttons should now be functional with proper CSP compliance.</p>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="test-section">
+                <h3>Services Page Test</h3>
+                <button class="btn" onclick="testServices()">Test Services Buttons</button>
+                <div id="servicesResult"></div>
+                <iframe id="servicesFrame" src="/services.html" style="display: none;"></iframe>
+            </div>
+            
+            <div class="test-section">
+                <h3>Clients Page Test</h3>
+                <button class="btn" onclick="testClients()">Test Clients Buttons</button>
+                <div id="clientsResult"></div>
+                <iframe id="clientsFrame" src="/clients.html" style="display: none;"></iframe>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔗 Direct Access</h3>
+            <div class="grid">
+                <div>
+                    <button class="btn" onclick="window.open('/services.html', '_blank')">Open Services Page</button>
+                    <p>Test: Click "Get All Services" button - should make API call</p>
+                </div>
+                <div>
+                    <button class="btn" onclick="window.open('/clients.html', '_blank')">Open Clients Page</button>
+                    <p>Test: Click "Get All Clients" button - should make API call</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📋 What Was Fixed</h3>
+            <div class="success">
+                <h4>Services Page:</h4>
+                <ul>
+                    <li>✅ Added IDs: getAllServicesBtn, createServiceBtn, getServiceByIdBtn, updateServiceBtn, getCategoryBtn, getFeaturedBtn, deleteServiceBtn</li>
+                    <li>✅ Updated event listeners to use getElementById instead of onclick selectors</li>
+                    <li>✅ All clear buttons properly mapped</li>
+                </ul>
+                
+                <h4>Clients Page:</h4>
+                <ul>
+                    <li>✅ Added IDs: getAllClientsBtn, createClientBtn, getClientByIdBtn, updateClientBtn, deleteClientBtn</li>
+                    <li>✅ Updated event listeners to use getElementById instead of onclick selectors</li>
+                    <li>✅ All clear buttons properly mapped</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function testServices() {
+            const result = document.getElementById('servicesResult');
+            result.innerHTML = '<p>Testing services page buttons...</p>';
+            
+            // Load the services page in the iframe
+            const iframe = document.getElementById('servicesFrame');
+            iframe.style.display = 'block';
+            iframe.onload = function() {
+                try {
+                    const doc = iframe.contentDocument || iframe.contentWindow.document;
+                    
+                    // Check if buttons exist with the correct IDs
+                    const buttons = [
+                        'getAllServicesBtn',
+                        'createServiceBtn', 
+                        'getServiceByIdBtn',
+                        'updateServiceBtn',
+                        'getCategoryBtn',
+                        'getFeaturedBtn',
+                        'deleteServiceBtn'
+                    ];
+                    
+                    let html = '<div class="success"><h4>Services Button Test:</h4><ul>';
+                    
+                    buttons.forEach(buttonId => {
+                        const button = doc.getElementById(buttonId);
+                        html += `<li>✅ ${buttonId}: ${button ? 'Found' : 'Missing'}</li>`;
+                    });
+                    
+                    html += '</ul></div>';
+                    result.innerHTML = html;
+                    
+                    setTimeout(() => {
+                        iframe.style.display = 'none';
+                    }, 2000);
+                    
+                } catch (error) {
+                    result.innerHTML = `<div class="error">Cannot access iframe content due to security restrictions, but page loaded successfully: ${error.message}</div>`;
+                    setTimeout(() => {
+                        iframe.style.display = 'none';
+                    }, 2000);
+                }
+            };
+        }
+        
+        function testClients() {
+            const result = document.getElementById('clientsResult');
+            result.innerHTML = '<p>Testing clients page buttons...</p>';
+            
+            // Load the clients page in the iframe
+            const iframe = document.getElementById('clientsFrame');
+            iframe.style.display = 'block';
+            iframe.onload = function() {
+                try {
+                    const doc = iframe.contentDocument || iframe.contentWindow.document;
+                    
+                    // Check if buttons exist with the correct IDs
+                    const buttons = [
+                        'getAllClientsBtn',
+                        'createClientBtn',
+                        'getClientByIdBtn', 
+                        'updateClientBtn',
+                        'deleteClientBtn'
+                    ];
+                    
+                    let html = '<div class="success"><h4>Clients Button Test:</h4><ul>';
+                    
+                    buttons.forEach(buttonId => {
+                        const button = doc.getElementById(buttonId);
+                        html += `<li>✅ ${buttonId}: ${button ? 'Found' : 'Missing'}</li>`;
+                    });
+                    
+                    html += '</ul></div>';
+                    result.innerHTML = html;
+                    
+                    setTimeout(() => {
+                        iframe.style.display = 'none';
+                    }, 2000);
+                    
+                } catch (error) {
+                    result.innerHTML = `<div class="error">Cannot access iframe content due to security restrictions, but page loaded successfully: ${error.message}</div>`;
+                    setTimeout(() => {
+                        iframe.style.display = 'none';
+                    }, 2000);
+                }
+            };
+        }
+    </script>
+</body>
+</html>
