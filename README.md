@@ -2,6 +2,8 @@
 
 This repository includes comprehensive tools and documentation for managing branches, resolving conflicts, implementing feature flags, and performing safe merges.
 
+> 🚀 **New here?** Start with the [Getting Started Guide](GETTING_STARTED.md) for a 5-minute introduction!
+
 ## 📚 Documentation
 
 - **[Branching Strategy](BRANCHING_STRATEGY.md)** - Complete guide on creating and managing branches
