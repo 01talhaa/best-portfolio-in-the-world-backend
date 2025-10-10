@@ -3,6 +3,13 @@ const router = express.Router();
 const { upload, deleteFromCloudinary, extractPublicId } = require('../config/cloudinary');
 const { protect } = require('../middleware/auth');
 
+// Import models for entity association
+const Project = require('../models/Project');
+const TeamMember = require('../models/TeamMember');
+const Service = require('../models/Service');
+const Client = require('../models/Client');
+const Blog = require('../models/Blog');
+
 /**
  * @route   POST /api/upload/single
  * @desc    Upload a single file with optional entity association
@@ -18,7 +25,7 @@ router.post('/single', protect, upload.single('file'), async (req, res) => {
     }
 
     // Extract entity association data from request body
-    const { entityType, entityId, description } = req.body;
+    const { entityType, entityId, description, imageType = 'gallery' } = req.body;
 
     const responseData = {
       url: req.file.path,
@@ -29,13 +36,116 @@ router.post('/single', protect, upload.single('file'), async (req, res) => {
       resourceType: req.file.resource_type || 'auto'
     };
 
-    // Add entity association if provided
+    // If entity association is provided, update the entity in database
     if (entityType && entityId) {
-      responseData.entityAssociation = {
-        type: entityType, // 'project', 'team-member', 'blog', 'service', 'client'
-        id: entityId,
-        description: description || null
-      };
+      const imageUrl = req.file.path;
+      let entity = null;
+      let updateResult = null;
+
+      try {
+        switch (entityType.toLowerCase()) {
+          case 'project':
+            entity = await Project.findById(entityId);
+            if (entity) {
+              if (imageType === 'thumbnail') {
+                updateResult = await Project.findByIdAndUpdate(
+                  entityId,
+                  { thumbnail: imageUrl },
+                  { new: true }
+                );
+              } else {
+                updateResult = await Project.findByIdAndUpdate(
+                  entityId,
+                  { $addToSet: { images: imageUrl } },
+                  { new: true }
+                );
+              }
+            }
+            break;
+
+          case 'team-member':
+            entity = await TeamMember.findById(entityId);
+            if (entity) {
+              updateResult = await TeamMember.findByIdAndUpdate(
+                entityId,
+                { profileImage: imageUrl },
+                { new: true }
+              );
+            }
+            break;
+
+          case 'service':
+            entity = await Service.findById(entityId);
+            if (entity) {
+              if (imageType === 'icon') {
+                updateResult = await Service.findByIdAndUpdate(
+                  entityId,
+                  { icon: imageUrl },
+                  { new: true }
+                );
+              } else {
+                updateResult = await Service.findByIdAndUpdate(
+                  entityId,
+                  { $addToSet: { images: imageUrl } },
+                  { new: true }
+                );
+              }
+            }
+            break;
+
+          case 'client':
+            entity = await Client.findById(entityId);
+            if (entity) {
+              updateResult = await Client.findByIdAndUpdate(
+                entityId,
+                { logo: imageUrl },
+                { new: true }
+              );
+            }
+            break;
+
+          case 'blog':
+            entity = await Blog.findById(entityId);
+            if (entity && entity.images) {
+              updateResult = await Blog.findByIdAndUpdate(
+                entityId,
+                { $addToSet: { images: imageUrl } },
+                { new: true }
+              );
+            }
+            break;
+
+          default:
+            throw new Error(`Unsupported entity type: ${entityType}`);
+        }
+
+        if (!entity) {
+          return res.status(404).json({
+            success: false,
+            error: `${entityType} with ID ${entityId} not found`
+          });
+        }
+
+        responseData.entityAssociation = {
+          type: entityType,
+          id: entityId,
+          description: description || null,
+          imageType: imageType,
+          updated: updateResult ? true : false
+        };
+
+      } catch (dbError) {
+        console.error('Database update error:', dbError);
+        // Still return success for upload, but indicate DB issue
+        responseData.entityAssociation = {
+          type: entityType,
+          id: entityId,
+          description: description || null,
+          imageType: imageType,
+          updated: false,
+          error: dbError.message
+        };
+      }
     }
 
     res.status(200).json({
@@ -71,8 +181,12 @@ router.post('/multiple', protect, upload.array('files', 10), async (req, res) =>
 
     // Extract entity association data from request body
     const { entityType, entityId, description } = req.body;
+    
+    const uploadedFiles = [];
+    const imageUrls = req.files.map(file => file.path);
 
-    const uploadedFiles = req.files.map(file => {
+    // Process each file
+    for (const file of req.files) {
       const fileData = {
         url: file.path,
         publicId: file.filename,
@@ -82,17 +196,84 @@ router.post('/multiple', protect, upload.array('files', 10), async (req, res) =>
         resourceType: file.resource_type || 'auto'
       };
 
-      // Add entity association if provided
-      if (entityType && entityId) {
-        fileData.entityAssociation = {
-          type: entityType, // 'project', 'team-member', 'blog', 'service', 'client'
-          id: entityId,
-          description: description || null
-        };
-      }
+      uploadedFiles.push(fileData);
+    }
 
-      return fileData;
-    });
+    // If entity association is provided, update the entity in database
+    if (entityType && entityId) {
+      let entity = null;
+      let updateResult = null;
+
+      try {
+        switch (entityType.toLowerCase()) {
+          case 'project':
+            entity = await Project.findById(entityId);
+            if (entity) {
+              updateResult = await Project.findByIdAndUpdate(
+                entityId,
+                { $addToSet: { images: { $each: imageUrls } } },
+                { new: true }
+              );
+            }
+            break;
+
+          case 'service':
+            entity = await Service.findById(entityId);
+            if (entity) {
+              updateResult = await Service.findByIdAndUpdate(
+                entityId,
+                { $addToSet: { images: { $each: imageUrls } } },
+                { new: true }
+              );
+            }
+            break;
+
+          case 'blog':
+            entity = await Blog.findById(entityId);
+            if (entity && entity.images) {
+              updateResult = await Blog.findByIdAndUpdate(
+                entityId,
+                { $addToSet: { images: { $each: imageUrls } } },
+                { new: true }
+              );
+            }
+            break;
+
+          default:
+            throw new Error(`Multiple upload not supported for entity type: ${entityType}`);
+        }
+
+        if (!entity) {
+          return res.status(404).json({
+            success: false,
+            error: `${entityType} with ID ${entityId} not found`
+          });
+        }
+
+        // Add association info to each file
+        uploadedFiles.forEach(fileData => {
+          fileData.entityAssociation = {
+            type: entityType,
+            id: entityId,
+            description: description || null,
+            updated: updateResult ? true : false
+          };
+        });
+
+      } catch (dbError) {
+        console.error('Database update error:', dbError);
+        // Still return success for upload, but indicate DB issue
+        uploadedFiles.forEach(fileData => {
+          fileData.entityAssociation = {
+            type: entityType,
+            id: entityId,
+            description: description || null,
+            updated: false,
+            error: dbError.message
+          };
+        });
+      }
+    }
 
     res.status(200).json({
       success: true,

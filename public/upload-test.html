@@ -143,6 +143,20 @@
             </div>
             
             <div class="form-group">
+                <label for="imageType">Image Type:</label>
+                <select id="imageType">
+                    <option value="gallery">Gallery Image (default)</option>
+                    <option value="thumbnail">Thumbnail (projects only)</option>
+                    <option value="icon">Icon (services only)</option>
+                    <option value="profile">Profile Image (team members only)</option>
+                    <option value="logo">Logo (clients only)</option>
+                </select>
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    Choose the type of image for proper field assignment
+                </small>
+            </div>
+            
+            <div class="form-group">
                 <label for="description">Description (optional):</label>
                 <input type="text" id="description" placeholder="Brief description of this upload">
             </div>
@@ -244,6 +258,7 @@
             const entityType = document.getElementById('entityType').value;
             const entityId = document.getElementById('entityId').value.trim();
             const description = document.getElementById('description').value.trim();
+            const imageType = document.getElementById('imageType').value;
             
             if (entityType) {
                 formData.append('entityType', entityType);
@@ -254,6 +269,12 @@
             }
             
             if (description) {
+                formData.append('description', description);
+            }
+            
+            if (imageType) {
+                formData.append('imageType', imageType);
+            }
                 formData.append('description', description);
             }
             
@@ -285,6 +306,7 @@
             document.getElementById('testFile').value = '';
             document.getElementById('entityType').value = '';
             document.getElementById('entityId').value = '';
+            document.getElementById('imageType').value = 'gallery';
             document.getElementById('description').value = '';
             document.getElementById('uploadResponse').style.display = 'none';
         }

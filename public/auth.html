@@ -258,6 +258,290 @@
                 
                 <div id="logoutResponse" class="response-area" style="display: none;"></div>
             </div>
+
+            <!-- API Integration Guide -->
+            <div class="test-section" style="background: #f8f9fa; border-left: 4px solid #007bff;">
+                <h3>📚 API Integration Guide</h3>
+                <p><strong>How to use these Authentication endpoints in your app/website:</strong></p>
+                
+                <div style="margin-top: 20px;">
+                    <h4>🔐 1. User Registration</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> POST /api/v1/auth/register
+<strong>Headers:</strong> Content-Type: application/json
+
+<strong>Request Body:</strong>
+{
+  "name": "John Doe",
+  "email": "john@example.com", 
+  "password": "StrongPassword123!",
+  "role": "admin" // optional, defaults to "user"
+}
+
+<strong>Success Response (201):</strong>
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": "507f1f77bcf86cd799439011",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "role": "admin",
+      "isActive": true
+    },
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const response = await fetch('/api/v1/auth/register', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    name: 'John Doe',
+    email: 'john@example.com',
+    password: 'StrongPassword123!'
+  })
+});
+const data = await response.json();
+localStorage.setItem('accessToken', data.data.accessToken);
+localStorage.setItem('refreshToken', data.data.refreshToken);
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🔑 2. User Login</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> POST /api/v1/auth/login
+<strong>Headers:</strong> Content-Type: application/json
+
+<strong>Request Body:</strong>
+{
+  "email": "john@example.com",
+  "password": "StrongPassword123!"
+}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": "507f1f77bcf86cd799439011",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "role": "admin"
+    },
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const response = await fetch('/api/v1/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'john@example.com',
+    password: 'StrongPassword123!'
+  })
+});
+const data = await response.json();
+localStorage.setItem('accessToken', data.data.accessToken);
+localStorage.setItem('refreshToken', data.data.refreshToken);
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🔄 3. Token Refresh</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> POST /api/v1/auth/refresh
+<strong>Headers:</strong> 
+  Content-Type: application/json
+  Authorization: Bearer {refresh_token}
+
+<strong>Request Body:</strong> (empty)
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const refreshToken = localStorage.getItem('refreshToken');
+const response = await fetch('/api/v1/auth/refresh', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${refreshToken}`
+  }
+});
+const data = await response.json();
+localStorage.setItem('accessToken', data.data.accessToken);
+localStorage.setItem('refreshToken', data.data.refreshToken);
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🚪 4. User Logout</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> POST /api/v1/auth/logout
+<strong>Headers:</strong> 
+  Content-Type: application/json
+  Authorization: Bearer {access_token}
+
+<strong>Request Body:</strong> (empty)
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
+
+<strong>JavaScript Example:</strong>
+const accessToken = localStorage.getItem('accessToken');
+const response = await fetch('/api/v1/auth/logout', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`
+  }
+});
+localStorage.removeItem('accessToken');
+localStorage.removeItem('refreshToken');
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>⚠️ Error Handling</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Common Error Responses:</strong>
+
+<strong>400 Bad Request:</strong>
+{
+  "success": false,
+  "error": "Please provide name, email and password"
+}
+
+<strong>401 Unauthorized:</strong>
+{
+  "success": false,
+  "error": "Invalid credentials"
+}
+
+<strong>409 Conflict:</strong>
+{
+  "success": false,
+  "error": "User already exists with this email"
+}
+
+<strong>JavaScript Error Handling:</strong>
+try {
+  const response = await fetch('/api/v1/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  
+  const data = await response.json();
+  
+  if (!response.ok) {
+    throw new Error(data.error || 'Login failed');
+  }
+  
+  // Success - store tokens
+  localStorage.setItem('accessToken', data.data.accessToken);
+  localStorage.setItem('refreshToken', data.data.refreshToken);
+  
+} catch (error) {
+  console.error('Login error:', error.message);
+  alert('Login failed: ' + error.message);
+}
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🔗 Using Tokens for Protected Routes</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>For all protected API calls, include access token in headers:</strong>
+
+const accessToken = localStorage.getItem('accessToken');
+
+// Example: Get all projects
+const response = await fetch('/api/v1/projects', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`
+  }
+});
+
+// Example: Create new project
+const response = await fetch('/api/v1/projects', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`
+  },
+  body: JSON.stringify({
+    title: 'My New Project',
+    description: 'Project description',
+    category: 'Website'
+  })
+});
+
+<strong>Token Refresh Logic:</strong>
+async function makeAuthenticatedRequest(url, options = {}) {
+  let accessToken = localStorage.getItem('accessToken');
+  
+  let response = await fetch(url, {
+    ...options,
+    headers: {
+      ...options.headers,
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+  
+  // If token expired, try to refresh
+  if (response.status === 401) {
+    const refreshToken = localStorage.getItem('refreshToken');
+    const refreshResponse = await fetch('/api/v1/auth/refresh', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${refreshToken}`
+      }
+    });
+    
+    if (refreshResponse.ok) {
+      const refreshData = await refreshResponse.json();
+      localStorage.setItem('accessToken', refreshData.data.accessToken);
+      localStorage.setItem('refreshToken', refreshData.data.refreshToken);
+      
+      // Retry original request with new token
+      response = await fetch(url, {
+        ...options,
+        headers: {
+          ...options.headers,
+          'Authorization': `Bearer ${refreshData.data.accessToken}`
+        }
+      });
+    } else {
+      // Refresh failed, redirect to login
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      window.location.href = '/login';
+    }
+  }
+  
+  return response;
+}
+                    </pre>
+                </div>
+            </div>
         </div>
     </div>
 

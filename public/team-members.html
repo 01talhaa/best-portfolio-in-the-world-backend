@@ -339,6 +339,317 @@
                 
                 <div id="deleteResponse" class="response-area" style="display: none;"></div>
             </div>
+
+            <!-- API Integration Guide -->
+            <div class="test-section" style="background: #f8f9fa; border-left: 4px solid #007bff;">
+                <h3>📚 Team Members API Integration Guide</h3>
+                <p><strong>How to use these Team Member endpoints in your app/website:</strong></p>
+                
+                <div style="margin-top: 20px;">
+                    <h4>👥 1. Get All Team Members</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> GET /api/v1/team-members
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@company.com",
+      "phone": "+1-555-0123",
+      "position": "Full Stack Developer",
+      "bio": "Experienced developer with expertise in modern web technologies...",
+      "profileImage": "https://res.cloudinary.com/example/image/upload/v1234567890/profile.jpg",
+      "skills": ["JavaScript", "React", "Node.js", "MongoDB"],
+      "experience": 5,
+      "department": "Engineering",
+      "socialLinks": {
+        "linkedin": "https://linkedin.com/in/johndoe",
+        "github": "https://github.com/johndoe",
+        "portfolio": "https://johndoe.dev"
+      },
+      "isActive": true,
+      "joinDate": "2022-01-15T00:00:00.000Z",
+      "createdAt": "2022-01-15T00:00:00.000Z",
+      "updatedAt": "2024-03-01T00:00:00.000Z"
+    }
+  ],
+  "count": 1
+}
+
+<strong>JavaScript Example:</strong>
+const accessToken = localStorage.getItem('accessToken');
+const response = await fetch('/api/v1/team-members', {
+  method: 'GET',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  }
+});
+const data = await response.json();
+console.log('Team Members:', data.data);
+
+// Display team members in UI
+data.data.forEach(member => {
+  const memberCard = document.createElement('div');
+  memberCard.innerHTML = `
+    <h3>${member.firstName} ${member.lastName}</h3>
+    <p>${member.position}</p>
+    <img src="${member.profileImage}" alt="${member.firstName}" />
+  `;
+  document.getElementById('team-container').appendChild(memberCard);
+});
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>➕ 2. Create New Team Member</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> POST /api/v1/team-members
+<strong>Headers:</strong> 
+  Content-Type: application/json
+  Authorization: Bearer {access_token}
+
+<strong>Request Body:</strong>
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "email": "jane.smith@company.com", // optional, must be unique
+  "phone": "+1-555-0124", // optional
+  "position": "UI/UX Designer",
+  "bio": "Creative designer with a passion for user experience...", // optional
+  "profileImage": "https://example.com/profile.jpg", // optional
+  "skills": ["UI Design", "UX Research", "Figma", "Adobe Creative Suite"], // optional
+  "experience": 3, // optional
+  "department": "Design", // optional
+  "socialLinks": { // optional
+    "linkedin": "https://linkedin.com/in/janesmith",
+    "behance": "https://behance.net/janesmith"
+  },
+  "isActive": true, // optional, default: true
+  "joinDate": "2024-04-01" // optional
+}
+
+<strong>Success Response (201):</strong>
+{
+  "success": true,
+  "data": {
+    "_id": "507f1f77bcf86cd799439012",
+    "firstName": "Jane",
+    "lastName": "Smith",
+    // ... all fields
+    "createdAt": "2024-04-01T00:00:00.000Z",
+    "updatedAt": "2024-04-01T00:00:00.000Z"
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const memberData = {
+  firstName: 'Jane',
+  lastName: 'Smith',
+  position: 'UI/UX Designer',
+  skills: ['UI Design', 'UX Research', 'Figma'],
+  experience: 3
+};
+
+const response = await fetch('/api/v1/team-members', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`
+  },
+  body: JSON.stringify(memberData)
+});
+const result = await response.json();
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🔍 3. Get Team Member by ID</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> GET /api/v1/team-members/:id
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": {
+    "_id": "507f1f77bcf86cd799439011",
+    "firstName": "John",
+    "lastName": "Doe",
+    // ... all team member fields
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const memberId = '507f1f77bcf86cd799439011';
+const response = await fetch(`/api/v1/team-members/${memberId}`, {
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  }
+});
+const member = await response.json();
+
+// Create detailed member profile
+document.getElementById('member-detail').innerHTML = `
+  <div class="member-profile">
+    <img src="${member.data.profileImage}" alt="${member.data.firstName}" />
+    <h2>${member.data.firstName} ${member.data.lastName}</h2>
+    <h3>${member.data.position}</h3>
+    <p>${member.data.bio}</p>
+    <div class="skills">
+      ${member.data.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+    </div>
+  </div>
+`;
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>✏️ 4. Update Team Member</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> PUT /api/v1/team-members/:id
+<strong>Headers:</strong> 
+  Content-Type: application/json
+  Authorization: Bearer {access_token}
+
+<strong>Request Body:</strong> (include only fields you want to update)
+{
+  "position": "Senior Full Stack Developer",
+  "experience": 6,
+  "skills": ["JavaScript", "React", "Node.js", "MongoDB", "TypeScript", "GraphQL"],
+  "bio": "Senior developer with expertise in modern web technologies and team leadership..."
+}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": {
+    "_id": "507f1f77bcf86cd799439011",
+    // ... updated team member data
+    "updatedAt": "2024-04-01T00:00:00.000Z"
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const updates = {
+  position: 'Senior Developer',
+  experience: 6,
+  skills: ['JavaScript', 'React', 'Node.js', 'TypeScript']
+};
+
+const response = await fetch(`/api/v1/team-members/${memberId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`
+  },
+  body: JSON.stringify(updates)
+});
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🗑️ 5. Delete Team Member</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> DELETE /api/v1/team-members/:id
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": {},
+  "message": "Team member removed successfully"
+}
+
+<strong>JavaScript Example:</strong>
+const response = await fetch(`/api/v1/team-members/${memberId}`, {
+  method: 'DELETE',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  }
+});
+
+if (response.ok) {
+  // Remove from UI
+  document.getElementById(`member-${memberId}`).remove();
+}
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>📸 6. Profile Image Upload</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Upload profile images using the upload endpoint:</strong>
+
+<strong>Endpoint:</strong> POST /api/v1/upload/single
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+<strong>Body:</strong> FormData
+
+FormData fields:
+- file: (image file)
+- entityType: "team-member"
+- entityId: "507f1f77bcf86cd799439011"
+- imageType: "profile" (automatically sets profileImage field)
+
+<strong>JavaScript Example:</strong>
+const formData = new FormData();
+formData.append('file', profileImageFile);
+formData.append('entityType', 'team-member');
+formData.append('entityId', memberId);
+formData.append('imageType', 'profile');
+
+const response = await fetch('/api/v1/upload/single', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  },
+  body: formData
+});
+
+// Profile image will be automatically updated in team member record
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🔧 Field Reference</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Required Fields:</strong>
+- firstName: string
+- lastName: string  
+- position: string
+
+<strong>Optional Fields:</strong>
+- email: string (unique, valid email format)
+- phone: string (valid phone number format)
+- bio: string (max 1000 characters)
+- profileImage: string (URL)
+- skills: array of strings
+- experience: number (years)
+- department: string
+- socialLinks: object { linkedin, github, portfolio, twitter, behance, etc. }
+- isActive: boolean (default: true)
+- joinDate: Date
+
+<strong>Validation Rules:</strong>
+- Email must be unique if provided
+- Phone number must be in valid format
+- Profile image must be valid URL
+- Social links must be valid URLs
+- Experience must be non-negative number
+
+<strong>Common Use Cases:</strong>
+1. Team page display: Get all active members
+2. Member profiles: Get individual member details  
+3. Admin panel: CRUD operations for HR management
+4. Project assignments: Link members to projects
+5. Skills filtering: Filter by skills or department
+                    </pre>
+                </div>
+            </div>
         </div>
     </div>
 

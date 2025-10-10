@@ -398,6 +398,342 @@
                 
                 <div id="deleteResponse" class="response-area" style="display: none;"></div>
             </div>
+
+            <!-- API Integration Guide -->
+            <div class="test-section" style="background: #f8f9fa; border-left: 4px solid #007bff;">
+                <h3>📚 Projects API Integration Guide</h3>
+                <p><strong>How to use these Project endpoints in your app/website:</strong></p>
+                
+                <div style="margin-top: 20px;">
+                    <h4>📋 1. Get All Projects</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> GET /api/v1/projects
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "title": "Portfolio Website",
+      "shortDescription": "Modern responsive portfolio",
+      "fullDescription": "A comprehensive portfolio website...",
+      "category": "Website",
+      "featured": true,
+      "tags": ["React", "Node.js", "MongoDB"],
+      "thumbnail": "https://res.cloudinary.com/example/image/upload/v1234567890/thumbnail.jpg",
+      "images": [
+        "https://res.cloudinary.com/example/image/upload/v1234567890/image1.jpg",
+        "https://res.cloudinary.com/example/image/upload/v1234567890/image2.jpg"
+      ],
+      "videos": ["https://youtube.com/watch?v=example"],
+      "links": {
+        "demo": "https://portfolio-demo.com",
+        "github": "https://github.com/user/portfolio",
+        "documentation": "https://docs.portfolio.com"
+      },
+      "technologies": [
+        { "name": "React", "category": "Frontend" },
+        { "name": "Node.js", "category": "Backend" }
+      ],
+      "status": "completed",
+      "client": "507f1f77bcf86cd799439012",
+      "teamMembers": ["507f1f77bcf86cd799439013"],
+      "startDate": "2024-01-01T00:00:00.000Z",
+      "endDate": "2024-03-01T00:00:00.000Z",
+      "budget": { "amount": 5000, "currency": "USD" },
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-03-01T00:00:00.000Z"
+    }
+  ],
+  "count": 1
+}
+
+<strong>JavaScript Example:</strong>
+const accessToken = localStorage.getItem('accessToken');
+const response = await fetch('/api/v1/projects', {
+  method: 'GET',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  }
+});
+const data = await response.json();
+console.log('Projects:', data.data);
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>➕ 2. Create New Project</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> POST /api/v1/projects
+<strong>Headers:</strong> 
+  Content-Type: application/json
+  Authorization: Bearer {access_token}
+
+<strong>Request Body:</strong>
+{
+  "title": "E-commerce Platform",
+  "shortDescription": "Modern e-commerce solution",
+  "fullDescription": "A comprehensive e-commerce platform with advanced features...",
+  "category": "E-commerce",
+  "featured": false,
+  "tags": ["React", "Node.js", "MongoDB", "Stripe"],
+  "thumbnail": "https://example.com/thumbnail.jpg", // optional
+  "images": ["https://example.com/image1.jpg"], // optional
+  "videos": ["https://youtube.com/watch?v=demo"], // optional
+  "links": {
+    "demo": "https://ecommerce-demo.com",
+    "github": "https://github.com/user/ecommerce"
+  },
+  "technologies": [
+    { "name": "React", "category": "Frontend" },
+    { "name": "Express", "category": "Backend" }
+  ],
+  "status": "in-progress",
+  "client": "507f1f77bcf86cd799439012", // optional
+  "teamMembers": ["507f1f77bcf86cd799439013"], // optional
+  "startDate": "2024-04-01",
+  "endDate": "2024-06-01", // optional
+  "budget": { "amount": 8000, "currency": "USD" } // optional
+}
+
+<strong>Success Response (201):</strong>
+{
+  "success": true,
+  "data": {
+    "_id": "507f1f77bcf86cd799439014",
+    "title": "E-commerce Platform",
+    // ... all project fields
+    "createdAt": "2024-04-01T00:00:00.000Z",
+    "updatedAt": "2024-04-01T00:00:00.000Z"
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const projectData = {
+  title: 'My New Project',
+  shortDescription: 'A brief description',
+  fullDescription: 'Detailed project description...',
+  category: 'Website',
+  tags: ['React', 'Node.js'],
+  status: 'planning'
+};
+
+const response = await fetch('/api/v1/projects', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`
+  },
+  body: JSON.stringify(projectData)
+});
+const result = await response.json();
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🔍 3. Get Project by ID</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> GET /api/v1/projects/:id
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": {
+    "_id": "507f1f77bcf86cd799439011",
+    "title": "Portfolio Website",
+    // ... all project fields with populated references
+    "client": {
+      "_id": "507f1f77bcf86cd799439012",
+      "name": "Tech Corp",
+      "industry": "Technology"
+    },
+    "teamMembers": [
+      {
+        "_id": "507f1f77bcf86cd799439013",
+        "firstName": "John",
+        "lastName": "Doe",
+        "position": "Full Stack Developer"
+      }
+    ]
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const projectId = '507f1f77bcf86cd799439011';
+const response = await fetch(`/api/v1/projects/${projectId}`, {
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  }
+});
+const project = await response.json();
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>✏️ 4. Update Project</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> PUT /api/v1/projects/:id
+<strong>Headers:</strong> 
+  Content-Type: application/json
+  Authorization: Bearer {access_token}
+
+<strong>Request Body:</strong> (include only fields you want to update)
+{
+  "status": "completed",
+  "endDate": "2024-03-15",
+  "featured": true,
+  "technologies": [
+    { "name": "React", "category": "Frontend" },
+    { "name": "Node.js", "category": "Backend" },
+    { "name": "PostgreSQL", "category": "Database" }
+  ]
+}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": {
+    "_id": "507f1f77bcf86cd799439011",
+    // ... updated project data
+    "updatedAt": "2024-03-15T00:00:00.000Z"
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const updates = {
+  status: 'completed',
+  featured: true
+};
+
+const response = await fetch(`/api/v1/projects/${projectId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`
+  },
+  body: JSON.stringify(updates)
+});
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>⭐ 5. Get Featured Projects</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> GET /api/v1/projects/featured
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": [
+    // Array of projects where featured: true
+  ],
+  "count": 3
+}
+
+<strong>JavaScript Example:</strong>
+const response = await fetch('/api/v1/projects/featured', {
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  }
+});
+const featuredProjects = await response.json();
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🗑️ 6. Delete Project</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> DELETE /api/v1/projects/:id
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": {},
+  "message": "Project removed successfully"
+}
+
+<strong>JavaScript Example:</strong>
+const response = await fetch(`/api/v1/projects/${projectId}`, {
+  method: 'DELETE',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  }
+});
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>📸 7. Image Association</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Upload images for projects using the upload endpoint:</strong>
+
+<strong>Endpoint:</strong> POST /api/v1/upload/single
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+<strong>Body:</strong> FormData
+
+FormData fields:
+- file: (image file)
+- entityType: "project"
+- entityId: "507f1f77bcf86cd799439011"
+- imageType: "thumbnail" or "gallery" (default: "gallery")
+
+<strong>JavaScript Example:</strong>
+const formData = new FormData();
+formData.append('file', imageFile);
+formData.append('entityType', 'project');
+formData.append('entityId', projectId);
+formData.append('imageType', 'thumbnail'); // or 'gallery'
+
+const response = await fetch('/api/v1/upload/single', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  },
+  body: formData
+});
+
+// Image will be automatically added to project's thumbnail or images array
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🔧 Field Reference</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Required Fields:</strong>
+- title: string (unique)
+- fullDescription: string
+- category: enum ['Website', 'Mobile App', 'Web App', 'E-commerce', 'Residential', 'Commercial', 'Industrial', 'Software', 'Design', 'Consulting', 'Other']
+
+<strong>Optional Fields:</strong>
+- shortDescription: string (max 300 chars)
+- featured: boolean (default: false)
+- tags: array of strings
+- thumbnail: string (URL)
+- images: array of strings (URLs)
+- videos: array of strings (URLs)
+- links: object { demo, github, documentation }
+- technologies: array [{ name, category }]
+- status: enum ['planning', 'in-progress', 'completed', 'on-hold', 'cancelled'] (default: 'planning')
+- client: ObjectId (reference to Client)
+- teamMembers: array of ObjectIds (references to TeamMember)
+- startDate: Date
+- endDate: Date
+- budget: object { amount, currency }
+
+<strong>Status Values:</strong>
+- planning: Project is being planned
+- in-progress: Development is ongoing
+- completed: Project is finished
+- on-hold: Temporarily paused
+- cancelled: Project was cancelled
+                    </pre>
+                </div>
+            </div>
         </div>
     </div>
 

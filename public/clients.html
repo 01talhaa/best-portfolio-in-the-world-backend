@@ -322,6 +322,401 @@
                 
                 <div id="deleteResponse" class="response-area" style="display: none;"></div>
             </div>
+
+            <!-- API Integration Guide -->
+            <div class="test-section" style="background: #f8f9fa; border-left: 4px solid #007bff;">
+                <h3>📚 Clients API Integration Guide</h3>
+                <p><strong>How to use these Client endpoints in your app/website:</strong></p>
+                
+                <div style="margin-top: 20px;">
+                    <h4>🏢 1. Get All Clients</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> GET /api/v1/clients
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "507f1f77bcf86cd799439011",
+      "name": "Tech Corporation",
+      "logo": "https://res.cloudinary.com/example/image/upload/v1234567890/tech-corp-logo.png",
+      "industry": "Technology",
+      "website": "https://techcorp.com",
+      "description": "Leading technology company specializing in enterprise software solutions...",
+      "contactPerson": {
+        "name": "John Smith",
+        "title": "Chief Technology Officer",
+        "email": "john.smith@techcorp.com",
+        "phone": "+1-555-0123"
+      },
+      "address": {
+        "street": "123 Tech Street",
+        "city": "San Francisco",
+        "state": "CA",
+        "zipCode": "94105",
+        "country": "USA"
+      },
+      "projectHistory": ["507f1f77bcf86cd799439012", "507f1f77bcf86cd799439013"],
+      "status": "active",
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-03-01T00:00:00.000Z"
+    }
+  ],
+  "count": 1
+}
+
+<strong>JavaScript Example:</strong>
+const accessToken = localStorage.getItem('accessToken');
+const response = await fetch('/api/v1/clients', {
+  method: 'GET',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  }
+});
+const data = await response.json();
+
+// Display clients in a grid layout
+data.data.forEach(client => {
+  const clientCard = document.createElement('div');
+  clientCard.className = 'client-card';
+  clientCard.innerHTML = `
+    <div class="client-header">
+      <img src="${client.logo}" alt="${client.name}" class="client-logo" />
+      <h3>${client.name}</h3>
+      <span class="industry">${client.industry}</span>
+    </div>
+    <p>${client.description}</p>
+    <div class="contact-info">
+      <strong>Contact:</strong> ${client.contactPerson.name} (${client.contactPerson.title})
+    </div>
+    <a href="${client.website}" target="_blank" class="website-link">Visit Website</a>
+  `;
+  document.getElementById('clients-grid').appendChild(clientCard);
+});
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>➕ 2. Create New Client</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> POST /api/v1/clients
+<strong>Headers:</strong> 
+  Content-Type: application/json
+  Authorization: Bearer {access_token}
+
+<strong>Request Body:</strong>
+{
+  "name": "Startup Inc",
+  "logo": "https://example.com/startup-logo.png", // optional
+  "industry": "SaaS", // optional
+  "website": "https://startup.com", // optional
+  "description": "Innovative startup focused on AI-driven solutions...", // optional
+  "contactPerson": { // optional
+    "name": "Jane Doe",
+    "title": "CEO",
+    "email": "jane@startup.com",
+    "phone": "+1-555-0124"
+  },
+  "address": { // optional
+    "street": "456 Innovation Ave",
+    "city": "Austin",
+    "state": "TX",
+    "zipCode": "73301",
+    "country": "USA"
+  },
+  "status": "prospect", // optional: prospect, active, inactive, completed
+  "isActive": true // optional, default: true
+}
+
+<strong>Success Response (201):</strong>
+{
+  "success": true,
+  "data": {
+    "_id": "507f1f77bcf86cd799439014",
+    "name": "Startup Inc",
+    // ... all client fields
+    "projectHistory": [],
+    "createdAt": "2024-04-01T00:00:00.000Z",
+    "updatedAt": "2024-04-01T00:00:00.000Z"
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const clientData = {
+  name: 'New Client Corp',
+  industry: 'Healthcare',
+  website: 'https://newclient.com',
+  contactPerson: {
+    name: 'Alice Johnson',
+    title: 'Project Manager',
+    email: 'alice@newclient.com'
+  }
+};
+
+const response = await fetch('/api/v1/clients', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`
+  },
+  body: JSON.stringify(clientData)
+});
+const result = await response.json();
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🔍 3. Get Client by ID</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> GET /api/v1/clients/:id
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": {
+    "_id": "507f1f77bcf86cd799439011",
+    "name": "Tech Corporation",
+    // ... all client fields with populated project history
+    "projectHistory": [
+      {
+        "_id": "507f1f77bcf86cd799439012",
+        "title": "E-commerce Platform",
+        "status": "completed",
+        "startDate": "2024-01-01T00:00:00.000Z",
+        "endDate": "2024-03-01T00:00:00.000Z"
+      }
+    ]
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const clientId = '507f1f77bcf86cd799439011';
+const response = await fetch(`/api/v1/clients/${clientId}`, {
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  }
+});
+const client = await response.json();
+
+// Create detailed client profile page
+document.getElementById('client-profile').innerHTML = `
+  <div class="client-header">
+    <img src="${client.data.logo}" alt="${client.data.name}" class="client-logo-large" />
+    <div class="client-info">
+      <h1>${client.data.name}</h1>
+      <p class="industry">${client.data.industry}</p>
+      <a href="${client.data.website}" target="_blank">Visit Website</a>
+    </div>
+  </div>
+  <div class="client-details">
+    <div class="description">
+      <h3>About</h3>
+      <p>${client.data.description}</p>
+    </div>
+    <div class="contact-details">
+      <h3>Primary Contact</h3>
+      <p><strong>${client.data.contactPerson.name}</strong></p>
+      <p>${client.data.contactPerson.title}</p>
+      <p><a href="mailto:${client.data.contactPerson.email}">${client.data.contactPerson.email}</a></p>
+    </div>
+    <div class="project-history">
+      <h3>Project History</h3>
+      <div class="projects">
+        ${client.data.projectHistory.map(project => `
+          <div class="project-item">
+            <h4>${project.title}</h4>
+            <span class="status ${project.status}">${project.status}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>
+`;
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>✏️ 4. Update Client</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> PUT /api/v1/clients/:id
+<strong>Headers:</strong> 
+  Content-Type: application/json
+  Authorization: Bearer {access_token}
+
+<strong>Request Body:</strong> (include only fields you want to update)
+{
+  "status": "active",
+  "contactPerson": {
+    "name": "John Smith Jr.",
+    "title": "Senior CTO",
+    "email": "john.smith.jr@techcorp.com",
+    "phone": "+1-555-0125"
+  },
+  "description": "Updated company description with recent achievements..."
+}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": {
+    "_id": "507f1f77bcf86cd799439011",
+    // ... updated client data
+    "updatedAt": "2024-04-01T00:00:00.000Z"
+  }
+}
+
+<strong>JavaScript Example:</strong>
+const updates = {
+  status: 'active',
+  contactPerson: {
+    name: 'Updated Contact Name',
+    title: 'New Title',
+    email: 'updated@company.com'
+  }
+};
+
+const response = await fetch(`/api/v1/clients/${clientId}`, {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken}`
+  },
+  body: JSON.stringify(updates)
+});
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🗑️ 5. Delete Client</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Endpoint:</strong> DELETE /api/v1/clients/:id
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+
+<strong>Success Response (200):</strong>
+{
+  "success": true,
+  "data": {},
+  "message": "Client removed successfully"
+}
+
+<strong>JavaScript Example:</strong>
+if (confirm('Are you sure you want to delete this client?')) {
+  const response = await fetch(`/api/v1/clients/${clientId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+
+  if (response.ok) {
+    // Remove from UI
+    document.getElementById(`client-${clientId}`).remove();
+    showNotification('Client deleted successfully', 'success');
+  }
+}
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🖼️ 6. Client Logo Upload</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Upload client logos using the upload endpoint:</strong>
+
+<strong>Endpoint:</strong> POST /api/v1/upload/single
+<strong>Headers:</strong> Authorization: Bearer {access_token}
+<strong>Body:</strong> FormData
+
+FormData fields:
+- file: (logo image file)
+- entityType: "client"
+- entityId: "507f1f77bcf86cd799439011"
+- imageType: "logo" (automatically sets logo field)
+
+<strong>JavaScript Example:</strong>
+const formData = new FormData();
+formData.append('file', logoFile);
+formData.append('entityType', 'client');
+formData.append('entityId', clientId);
+formData.append('imageType', 'logo');
+
+const response = await fetch('/api/v1/upload/single', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`
+  },
+  body: formData
+});
+
+// Logo will be automatically updated in client record
+const result = await response.json();
+if (result.success) {
+  // Update UI with new logo
+  document.getElementById('client-logo').src = result.data.url;
+}
+                    </pre>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4>🔧 Field Reference</h4>
+                    <pre style="background: #2d3748; color: #e2e8f0; padding: 15px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+<strong>Required Fields:</strong>
+- name: string (unique company/client name)
+
+<strong>Optional Fields:</strong>
+- logo: string (URL to client logo)
+- industry: string (client's business industry)
+- website: string (valid URL)
+- description: string (max 1000 characters)
+- contactPerson: object {
+    name: string,
+    title: string,
+    email: string (valid email),
+    phone: string (valid phone number)
+  }
+- address: object {
+    street: string,
+    city: string,
+    state: string,
+    zipCode: string,
+    country: string
+  }
+- status: enum ['prospect', 'active', 'inactive', 'completed'] (default: 'prospect')
+- isActive: boolean (default: true)
+- projectHistory: array of ObjectIds (references to Project)
+
+<strong>Status Definitions:</strong>
+- prospect: Potential client, not yet engaged
+- active: Currently working with this client
+- inactive: Temporarily not working together
+- completed: All projects finished, relationship ended
+
+<strong>Common Use Cases:</strong>
+1. Client portfolio: Display past and current clients
+2. CRM system: Manage client relationships and contacts
+3. Project assignment: Link projects to specific clients
+4. Business development: Track prospects and active clients
+5. Testimonials: Feature satisfied clients
+6. Contact management: Store and access client contact information
+
+<strong>Integration Examples:</strong>
+// Get all active clients for portfolio display
+const activeClients = await fetch('/api/v1/clients?status=active');
+
+// Filter clients by industry
+const techClients = data.data.filter(client => client.industry === 'Technology');
+
+// Create client contact form
+const contactForm = clients.map(client => ({
+  value: client._id,
+  label: `${client.name} (${client.contactPerson.name})`
+}));
+                    </pre>
+                </div>
+            </div>
         </div>
     </div>
 
