@@ -122,17 +122,20 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     // Connect to database
-    const dbConnection = await connectDB();
-    if (dbConnection) {
-      logger.info('Database connection established');
-    } else {
-      logger.warn('Server starting without database connection');
-    }
-    
+    await connectDB(); // just attempt connection, don’t assign to dbConnection
+
+    // Log success when connected using mongoose events
+    const mongoose = require('mongoose');
+    mongoose.connection.once('open', () => {
+      logger.info('MongoDB connected successfully');
+    });
+    mongoose.connection.on('error', (err) => {
+      logger.error('MongoDB connection error:', err);
+    });
+
     const PORT = config.PORT;
     const server = app.listen(PORT, () => {
       logger.info(`Server running in ${config.NODE_ENV} mode on port ${PORT}`);
-      
       // Log available routes in development
       if (config.isDevelopment) {
         logger.info('Available routes:');
@@ -152,7 +155,6 @@ const startServer = async () => {
         process.exit(0);
       });
     };
-
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
     process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
@@ -162,6 +164,7 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
 
 // Start the server if this file is run directly
 if (require.main === module) {
