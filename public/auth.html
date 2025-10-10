@@ -638,35 +638,39 @@ async function makeAuthenticatedRequest(url, options = {}) {
         }
 
         async function refreshToken() {
+            if (!refreshTokenValue) {
+                displayResponse('refreshResponse', {
+                    error: 'No refresh token available. Please login first.'
+                });
+                return;
+            }
+
             try {
-                if (!refreshTokenValue && !localStorage.getItem('refreshToken')) {
-                    displayResponse('refreshResponse', {
-                    body: JSON.stringify(data)
+                const response = await fetch(`${BASE_URL}/auth/refresh-token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        refreshToken: refreshTokenValue
+                    })
                 });
 
-                console.log('Response status:', response.status);
                 const result = await response.json();
-                console.log('Response data:', result);
-                
-                displayResponse('regResponse', {
+                displayResponse('refreshResponse', {
                     status: response.status,
                     statusText: response.statusText,
                     data: result
                 });
 
-                if (result.success) {
-                    // Auto-fill login form with registered credentials
-                    document.getElementById('loginEmail').value = data.email;
-                    document.getElementById('loginPassword').value = data.password;
-                    alert('Registration successful! Login form has been auto-filled.');
+                if (result.success && result.data) {
+                    accessToken = result.data.accessToken;
+                    document.getElementById('tokenText').textContent = accessToken;
                 }
             } catch (error) {
-                console.error('Registration error:', error);
-                displayResponse('regResponse', {
-                    error: error.message,
-                    stack: error.stack
+                displayResponse('refreshResponse', {
+                    error: error.message
                 });
-                alert('Error: ' + error.message);
             }
         }
 
