@@ -545,18 +545,18 @@ async function makeAuthenticatedRequest(url, options = {}) {
         </div>
     </div>
 
+    <script src="js/api-config.js"></script>
     <script>
         console.log('🚀 Auth page JavaScript loaded');
-        alert('🎯 JavaScript is executing immediately!');
         
-        const BASE_URL = 'http://localhost:5000/api/v1';
+        // Global variables for token management
         let accessToken = '';
         let refreshTokenValue = '';
 
         // Test function to verify JavaScript is working
         function testJS() {
             console.log('🧪 testJS function called');
-            alert('🎉 JavaScript is working! BASE_URL: ' + BASE_URL);
+            alert('🎉 JavaScript is working! BASE_URL: ' + API_CONFIG.BASE_URL);
         }
 
         async function registerUser() {
@@ -571,13 +571,76 @@ async function makeAuthenticatedRequest(url, options = {}) {
                 };
 
                 console.log('Sending registration data:', data);
-                console.log('URL:', `${BASE_URL}/auth/register`);
+                console.log('URL:', `${API_CONFIG.BASE_URL}/auth/register`);
 
-                const response = await fetch(`${BASE_URL}/auth/register`, {
+                const result = await API_CONFIG.apiRequest('/auth/register', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    body: JSON.stringify(data)
+                });
+
+                displayResponse('regResponse', {
+                    status: 201,
+                    statusText: 'Created',
+                    data: result
+                });
+
+                if (result.success && result.data) {
+                    accessToken = result.data.accessToken;
+                    refreshTokenValue = result.data.refreshToken;
+                    document.getElementById('tokenText').textContent = accessToken;
+                    document.getElementById('tokenDisplay').style.display = 'block';
+                    
+                    // Store tokens for api-config
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshTokenValue);
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                displayResponse('regResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function loginUser() {
+            try {
+                const data = {
+                    email: document.getElementById('loginEmail').value,
+                    password: document.getElementById('loginPassword').value
+                };
+
+                const result = await API_CONFIG.apiRequest('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+
+                displayResponse('loginResponse', {
+                    status: 200,
+                    statusText: 'OK',
+                    data: result
+                });
+
+                if (result.success && result.data) {
+                    accessToken = result.data.accessToken;
+                    refreshTokenValue = result.data.refreshToken;
+                    document.getElementById('tokenText').textContent = accessToken;
+                    document.getElementById('tokenDisplay').style.display = 'block';
+                    
+                    // Store tokens for api-config
+                    localStorage.setItem('accessToken', accessToken);
+                    localStorage.setItem('refreshToken', refreshTokenValue);
+                }
+            } catch (error) {
+                displayResponse('loginResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        async function refreshToken() {
+            try {
+                if (!refreshTokenValue && !localStorage.getItem('refreshToken')) {
+                    displayResponse('refreshResponse', {
                     body: JSON.stringify(data)
                 });
 

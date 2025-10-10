@@ -182,7 +182,9 @@
     </div>
 
     <script>
-        const BASE_URL = 'http://localhost:5000/api/v1';
+            
+        const BASE_URL = 'https://best-portfolio-in-the-world-backend.onrender.com/api/v1';
+        let uploadedFiles = [];
         
         function getToken() {
             return document.getElementById('token').value.trim();
@@ -274,8 +276,6 @@
             
             if (imageType) {
                 formData.append('imageType', imageType);
-            }
-                formData.append('description', description);
             }
             
             try {

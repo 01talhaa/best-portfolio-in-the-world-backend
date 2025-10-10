@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deployment Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .response-area {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+        
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Deployment Connection Test</h1>
+            <p>Testing connection to deployed API</p>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔍 Basic Connection Tests</h3>
+            
+            <div id="urlInfo" class="info status">
+                <strong>Testing URL:</strong> https://best-portfolio-in-the-world-backend.onrender.com/api/v1
+            </div>
+            
+            <button class="btn" onclick="testHealth()">Test Health Check</button>
+            <button class="btn" onclick="testCORS()">Test CORS</button>
+            <button class="btn" onclick="testPublicEndpoint()">Test Public Endpoint</button>
+            <button class="btn" onclick="clearResults()">Clear Results</button>
+            
+            <div id="results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Connection Information</h3>
+            <div id="connectionInfo">
+                <div class="info status">
+                    <strong>Current URL:</strong> <span id="currentUrl"></span><br>
+                    <strong>Protocol:</strong> <span id="protocol"></span><br>
+                    <strong>Host:</strong> <span id="host"></span><br>
+                    <strong>User Agent:</strong> <span id="userAgent"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'https://best-portfolio-in-the-world-backend.onrender.com/api/v1';
+        
+        // Display connection info
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('protocol').textContent = window.location.protocol;
+        document.getElementById('host').textContent = window.location.host;
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        
+        function addResult(type, title, content) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `${type} status`;
+            div.innerHTML = `<strong>${title}:</strong><div class="response-area">${JSON.stringify(content, null, 2)}</div>`;
+            results.appendChild(div);
+        }
+        
+        function addError(title, error) {
+            addResult('error', title, {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+            });
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        async function testHealth() {
+            try {
+                console.log('Testing health endpoint...');
+                const response = await fetch(`${BASE_URL.replace('/api/v1', '')}/health`);
+                const data = await response.json();
+                
+                addResult('success', 'Health Check Response', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: data
+                });
+                
+                console.log('Health check successful:', data);
+            } catch (error) {
+                console.error('Health check failed:', error);
+                addError('Health Check Failed', error);
+            }
+        }
+        
+        async function testCORS() {
+            try {
+                console.log('Testing CORS...');
+                const response = await fetch(`${BASE_URL}/health`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'Content-Type,Authorization'
+                    }
+                });
+                
+                addResult('info', 'CORS Preflight Response', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: {
+                        'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+                        'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
+                        'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers'),
+                        'Access-Control-Allow-Credentials': response.headers.get('Access-Control-Allow-Credentials')
+                    }
+                });
+                
+                console.log('CORS test completed');
+            } catch (error) {
+                console.error('CORS test failed:', error);
+                addError('CORS Test Failed', error);
+            }
+        }
+        
+        async function testPublicEndpoint() {
+            try {
+                console.log('Testing public endpoint...');
+                // Try to access team-members without auth (should fail with 401, not connection error)
+                const response = await fetch(`${BASE_URL}/team-members`);
+                const data = await response.json();
+                
+                if (response.status === 401) {
+                    addResult('success', 'API Connection Working (Auth Required)', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        data: data,
+                        note: 'This is expected - endpoint requires authentication'
+                    });
+                } else {
+                    addResult('success', 'Public Endpoint Response', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        data: data
+                    });
+                }
+                
+                console.log('Public endpoint test completed:', { status: response.status, data });
+            } catch (error) {
+                console.error('Public endpoint test failed:', error);
+                addError('Public Endpoint Test Failed', error);
+            }
+        }
+        
+        // Auto-run basic tests on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, running automatic tests...');
+            setTimeout(() => {
+                testHealth();
+                setTimeout(() => testPublicEndpoint(), 1000);
+            }, 500);
+        });
+        
+        console.log('Deployment test page loaded successfully');
+        console.log('BASE_URL:', BASE_URL);
+    </script>
+</body>
+</html>

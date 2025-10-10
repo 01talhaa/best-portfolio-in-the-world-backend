@@ -20,7 +20,7 @@ module.exports = {
   GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   
   // CORS Configuration
-  CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:3000,https://best-portfolio-in-the-world-backend.onrender.com',
   
   // Rate Limiting - Much more flexible defaults
   RATE_LIMIT_MAX_REQUESTS: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 10000, // Increased from 100 to 10,000

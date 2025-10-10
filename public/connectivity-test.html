@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Connectivity Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: white;
+            color: black;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e9ecef;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+        }
+        .response-area {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 API Connectivity Test</h1>
+        <p>Testing connection to deployed backend</p>
+        
+        <div class="test-section">
+            <h3>Environment Detection</h3>
+            <div id="envInfo"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>CORS Test</h3>
+            <button onclick="testCORS()">Test CORS</button>
+            <div id="corsResult" class="response-area" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Basic Fetch Test</h3>
+            <button onclick="testBasicFetch()">Test Basic API Call</button>
+            <div id="fetchResult" class="response-area" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>API Config Test</h3>
+            <button onclick="testAPIConfig()">Test API Config</button>
+            <div id="configResult" class="response-area" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="js/api-config.js"></script>
+    <script>
+        // Display environment info immediately
+        document.addEventListener('DOMContentLoaded', function() {
+            const envInfo = document.getElementById('envInfo');
+            envInfo.innerHTML = `
+                <div class="info">
+                    <strong>Current Location:</strong> ${window.location.href}<br>
+                    <strong>Host:</strong> ${window.location.host}<br>
+                    <strong>Protocol:</strong> ${window.location.protocol}<br>
+                    <strong>API Config Loaded:</strong> ${window.API_CONFIG ? 'Yes' : 'No'}<br>
+                    <strong>Detected BASE_URL:</strong> ${window.API_CONFIG ? API_CONFIG.BASE_URL : 'Not available'}
+                </div>
+            `;
+        });
+
+        async function testCORS() {
+            const resultDiv = document.getElementById('corsResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = 'Testing CORS...';
+            
+            try {
+                const corsTestURL = API_CONFIG.BASE_URL + '/health';
+                console.log('Testing CORS with URL:', corsTestURL);
+                
+                const response = await fetch(corsTestURL, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                resultDiv.innerHTML = `
+                    <div class="success">✅ CORS Test Result:</div>
+                    <div>Status: ${response.status} ${response.statusText}</div>
+                    <div>URL: ${corsTestURL}</div>
+                    <div>Response Headers: ${JSON.stringify(Object.fromEntries(response.headers), null, 2)}</div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">❌ CORS Test Failed:</div>
+                    <div>Error: ${error.message}</div>
+                    <div>Stack: ${error.stack}</div>
+                `;
+            }
+        }
+
+        async function testBasicFetch() {
+            const resultDiv = document.getElementById('fetchResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = 'Testing basic fetch...';
+            
+            try {
+                const testURL = API_CONFIG.BASE_URL + '/health';
+                console.log('Testing basic fetch with URL:', testURL);
+                
+                const response = await fetch(testURL);
+                const data = await response.text();
+                
+                resultDiv.innerHTML = `
+                    <div class="success">✅ Basic Fetch Result:</div>
+                    <div>Status: ${response.status} ${response.statusText}</div>
+                    <div>Response: ${data}</div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">❌ Basic Fetch Failed:</div>
+                    <div>Error: ${error.message}</div>
+                    <div>Type: ${error.name}</div>
+                `;
+            }
+        }
+
+        async function testAPIConfig() {
+            const resultDiv = document.getElementById('configResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = 'Testing API Config...';
+            
+            try {
+                console.log('Testing API Config request');
+                
+                const result = await API_CONFIG.apiRequest('/health', {
+                    method: 'GET'
+                });
+                
+                resultDiv.innerHTML = `
+                    <div class="success">✅ API Config Test Result:</div>
+                    <div>Response: ${JSON.stringify(result, null, 2)}</div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">❌ API Config Test Failed:</div>
+                    <div>Error: ${error.message}</div>
+                    <div>Stack: ${error.stack}</div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

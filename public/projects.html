@@ -734,44 +734,31 @@ const response = await fetch('/api/v1/upload/single', {
                     </pre>
                 </div>
             </div>
-        </div>
     </div>
 
+    <script src="js/api-config.js"></script>
     <script>
-        const BASE_URL = 'http://localhost:5000/api/v1';
-        
         // Test function to verify JavaScript is working
         function testJS() {
             console.log('JavaScript is working in projects.html!');
             alert('JavaScript is working! Check console for more details.');
-            console.log('BASE_URL:', BASE_URL);
-        }
-
-        function getAuthHeaders() {
-            console.log('Getting auth headers...');
-            const token = document.getElementById('authToken').value;
-            console.log('Token:', token ? 'Token found' : 'No token');
-            return {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            };
+            console.log('BASE_URL:', API_CONFIG.BASE_URL);
         }
 
         async function getAllProjects() {
             console.log('getAllProjects called');
             try {
-                console.log('Making request to:', `${BASE_URL}/projects`);
-                const response = await fetch(`${BASE_URL}/projects`, {
-                    headers: getAuthHeaders()
+                console.log('Making request to:', `${API_CONFIG.BASE_URL}/projects`);
+                
+                const result = await API_CONFIG.apiRequest('/projects', {
+                    method: 'GET'
                 });
-
-                console.log('Response status:', response.status);
-                const result = await response.json();
+                
                 console.log('Response data:', result);
                 
                 displayResponse('getAllResponse', {
-                    status: response.status,
-                    statusText: response.statusText,
+                    status: 200,
+                    statusText: 'OK',
                     data: result
                 });
             } catch (error) {
@@ -803,16 +790,14 @@ const response = await fetch('/api/v1/upload/single', {
             };
 
             try {
-                const response = await fetch(`${BASE_URL}/projects`, {
+                const result = await API_CONFIG.apiRequest('/projects', {
                     method: 'POST',
-                    headers: getAuthHeaders(),
                     body: JSON.stringify(data)
                 });
 
-                const result = await response.json();
                 displayResponse('createResponse', {
-                    status: response.status,
-                    statusText: response.statusText,
+                    status: 201,
+                    statusText: 'Created',
                     data: result
                 });
 

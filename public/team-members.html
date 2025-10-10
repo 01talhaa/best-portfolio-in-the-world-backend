@@ -222,6 +222,9 @@
                         <input type="email" id="createEmail" value="john.doe@company.com">
                     </div>
                 </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
                         <label>Phone:</label>
                         <input type="text" id="createPhone" value="+1234567890">
                     </div>
@@ -650,17 +653,15 @@ const response = await fetch('/api/v1/upload/single', {
                     </pre>
                 </div>
             </div>
-        </div>
     </div>
 
+    <script src="js/api-config.js"></script>
     <script>
-        const BASE_URL = 'http://localhost:5000/api/v1';
-        
         // Test function to verify JavaScript is working
         function testJS() {
             console.log('JavaScript is working in team-members.html!');
             alert('JavaScript is working! Check console for more details.');
-            console.log('BASE_URL:', BASE_URL);
+            console.log('BASE_URL:', API_CONFIG.BASE_URL);
             console.log('Available elements:', {
                 authToken: !!document.getElementById('authToken'),
                 createFirstName: !!document.getElementById('createFirstName'),
@@ -669,31 +670,20 @@ const response = await fetch('/api/v1/upload/single', {
             });
         }
 
-        function getAuthHeaders() {
-            console.log('Getting auth headers...');
-            const token = document.getElementById('authToken').value;
-            console.log('Token:', token ? 'Token found' : 'No token');
-            return {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            };
-        }
-
         async function getAllTeamMembers() {
             console.log('getAllTeamMembers called');
             try {
-                console.log('Making request to:', `${BASE_URL}/team-members`);
-                const response = await fetch(`${BASE_URL}/team-members`, {
-                    headers: getAuthHeaders()
+                console.log('Making request to:', `${API_CONFIG.BASE_URL}/team-members`);
+                
+                const result = await API_CONFIG.apiRequest('/team-members', {
+                    method: 'GET'
                 });
-
-                console.log('Response status:', response.status);
-                const result = await response.json();
+                
                 console.log('Response data:', result);
                 
                 displayResponse('getAllResponse', {
-                    status: response.status,
-                    statusText: response.statusText,
+                    status: 200,
+                    statusText: 'OK',
                     data: result
                 });
             } catch (error) {
@@ -724,16 +714,14 @@ const response = await fetch('/api/v1/upload/single', {
             };
 
             try {
-                const response = await fetch(`${BASE_URL}/team-members`, {
+                const result = await API_CONFIG.apiRequest('/team-members', {
                     method: 'POST',
-                    headers: getAuthHeaders(),
                     body: JSON.stringify(data)
                 });
 
-                const result = await response.json();
                 displayResponse('createResponse', {
-                    status: response.status,
-                    statusText: response.statusText,
+                    status: 201,
+                    statusText: 'Created',
                     data: result
                 });
 
@@ -758,14 +746,13 @@ const response = await fetch('/api/v1/upload/single', {
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/team-members/${id}`, {
-                    headers: getAuthHeaders()
+                const result = await API_CONFIG.apiRequest(`/team-members/${id}`, {
+                    method: 'GET'
                 });
 
-                const result = await response.json();
                 displayResponse('getByIdResponse', {
-                    status: response.status,
-                    statusText: response.statusText,
+                    status: 200,
+                    statusText: 'OK',
                     data: result
                 });
             } catch (error) {
@@ -791,16 +778,14 @@ const response = await fetch('/api/v1/upload/single', {
             };
 
             try {
-                const response = await fetch(`${BASE_URL}/team-members/${id}`, {
+                const result = await API_CONFIG.apiRequest(`/team-members/${id}`, {
                     method: 'PUT',
-                    headers: getAuthHeaders(),
                     body: JSON.stringify(data)
                 });
 
-                const result = await response.json();
                 displayResponse('updateResponse', {
-                    status: response.status,
-                    statusText: response.statusText,
+                    status: 200,
+                    statusText: 'OK',
                     data: result
                 });
             } catch (error) {
@@ -822,15 +807,13 @@ const response = await fetch('/api/v1/upload/single', {
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/team-members/${id}`, {
-                    method: 'DELETE',
-                    headers: getAuthHeaders()
+                const result = await API_CONFIG.apiRequest(`/team-members/${id}`, {
+                    method: 'DELETE'
                 });
 
-                const result = await response.json();
                 displayResponse('deleteResponse', {
-                    status: response.status,
-                    statusText: response.statusText,
+                    status: 200,
+                    statusText: 'OK',
                     data: result
                 });
             } catch (error) {
@@ -875,10 +858,15 @@ const response = await fetch('/api/v1/upload/single', {
         // Add page load debugging
         window.onload = function() {
             console.log('Team members page loaded');
+            console.log('API Config loaded:', !!window.API_CONFIG);
         };
         
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM fully loaded for team members page');
+            console.log('API Config BASE_URL:', API_CONFIG.BASE_URL);
+            
+            // Set auth token if available
+            API_CONFIG.setAuthToken();
             
             // Add event listeners for all buttons
             document.getElementById('getAllMembersBtn').addEventListener('click', getAllTeamMembers);
