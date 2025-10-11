@@ -159,6 +159,7 @@
             border-left: 4px solid #2196f3;
         }
     </style>
+    <script src="js/api-config.js"></script>
 </head>
 <body>
     <div class="container">
@@ -721,7 +722,8 @@ const contactForm = clients.map(client => ({
     </div>
 
     <script>
-        const BASE_URL = 'https://best-portfolio-in-the-world-backend.onrender.com/api/v1';
+        // Remove hardcoded BASE_URL - use API_CONFIG instead
+        // const BASE_URL = 'https://best-portfolio-in-the-world-backend.onrender.com/api/v1';
 
         function getAuthHeaders() {
             const token = document.getElementById('authToken').value;
@@ -733,8 +735,8 @@ const contactForm = clients.map(client => ({
 
         async function getAllClients() {
             try {
-                const response = await fetch(`${BASE_URL}/clients`, {
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.makeRequest('/clients', {
+                    method: 'GET'
                 });
 
                 const result = await response.json();
@@ -764,9 +766,8 @@ const contactForm = clients.map(client => ({
             };
 
             try {
-                const response = await fetch(`${BASE_URL}/clients`, {
+                const response = await API_CONFIG.makeRequest('/clients', {
                     method: 'POST',
-                    headers: getAuthHeaders(),
                     body: JSON.stringify(data)
                 });
 
@@ -791,8 +792,8 @@ const contactForm = clients.map(client => ({
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/clients/${id}`, {
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.makeRequest(`/clients/${id}`, {
+                    method: 'GET'
                 });
 
                 const result = await response.json();
@@ -824,9 +825,8 @@ const contactForm = clients.map(client => ({
             };
 
             try {
-                const response = await fetch(`${BASE_URL}/clients/${id}`, {
+                const response = await API_CONFIG.makeRequest(`/clients/${id}`, {
                     method: 'PUT',
-                    headers: getAuthHeaders(),
                     body: JSON.stringify(data)
                 });
 
@@ -856,9 +856,8 @@ const contactForm = clients.map(client => ({
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/clients/${id}`, {
-                    method: 'DELETE',
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.makeRequest(`/clients/${id}`, {
+                    method: 'DELETE'
                 });
 
                 const result = await response.json();

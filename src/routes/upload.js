@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { upload, deleteFromCloudinary, extractPublicId } = require('../config/cloudinary');
-const { protect } = require('../middleware/auth');
 
 // Import models for entity association
 const Project = require('../models/Project');
@@ -13,9 +12,9 @@ const Blog = require('../models/Blog');
 /**
  * @route   POST /api/upload/single
  * @desc    Upload a single file with optional entity association
- * @access  Private
+ * @access  Public
  */
-router.post('/single', protect, upload.single('file'), async (req, res) => {
+router.post('/single', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -168,9 +167,9 @@ router.post('/single', protect, upload.single('file'), async (req, res) => {
 /**
  * @route   POST /api/upload/multiple
  * @desc    Upload multiple files with optional entity association
- * @access  Private
+ * @access  Public
  */
-router.post('/multiple', protect, upload.array('files', 10), async (req, res) => {
+router.post('/multiple', upload.array('files', 10), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
@@ -295,9 +294,9 @@ router.post('/multiple', protect, upload.array('files', 10), async (req, res) =>
 /**
  * @route   DELETE /api/upload/:publicId
  * @desc    Delete a file from Cloudinary
- * @access  Private
+ * @access  Public
  */
-router.delete('/:publicId', protect, async (req, res) => {
+router.delete('/:publicId', async (req, res) => {
   try {
     const { publicId } = req.params;
     
@@ -327,9 +326,9 @@ router.delete('/:publicId', protect, async (req, res) => {
 /**
  * @route   POST /api/upload/profile-image
  * @desc    Upload profile image for team members
- * @access  Private
+ * @access  Public
  */
-router.post('/profile-image', protect, upload.single('profileImage'), async (req, res) => {
+router.post('/profile-image', upload.single('profileImage'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -367,9 +366,9 @@ router.post('/profile-image', protect, upload.single('profileImage'), async (req
 /**
  * @route   POST /api/upload/certificate
  * @desc    Upload certificate document
- * @access  Private
+ * @access  Public
  */
-router.post('/certificate', protect, upload.single('certificate'), async (req, res) => {
+router.post('/certificate', upload.single('certificate'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -400,9 +399,9 @@ router.post('/certificate', protect, upload.single('certificate'), async (req, r
 /**
  * @route   POST /api/upload/project-media
  * @desc    Upload project images/videos
- * @access  Private
+ * @access  Public
  */
-router.post('/project-media', protect, upload.array('media', 5), async (req, res) => {
+router.post('/project-media', upload.array('media', 5), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({

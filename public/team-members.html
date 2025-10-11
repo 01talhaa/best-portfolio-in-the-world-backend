@@ -675,15 +675,16 @@ const response = await fetch('/api/v1/upload/single', {
             try {
                 console.log('Making request to:', `${API_CONFIG.BASE_URL}/team-members`);
                 
-                const result = await API_CONFIG.apiRequest('/team-members', {
+                const response = await API_CONFIG.apiRequest('/team-members', {
                     method: 'GET'
                 });
                 
+                const result = await response.json();
                 console.log('Response data:', result);
                 
                 displayResponse('getAllResponse', {
-                    status: 200,
-                    statusText: 'OK',
+                    status: response.status,
+                    statusText: response.statusText,
                     data: result
                 });
             } catch (error) {
@@ -714,14 +715,16 @@ const response = await fetch('/api/v1/upload/single', {
             };
 
             try {
-                const result = await API_CONFIG.apiRequest('/team-members', {
+                const response = await API_CONFIG.apiRequest('/team-members', {
                     method: 'POST',
                     body: JSON.stringify(data)
                 });
 
+                const result = await response.json();
+
                 displayResponse('createResponse', {
-                    status: 201,
-                    statusText: 'Created',
+                    status: response.status,
+                    statusText: response.statusText,
                     data: result
                 });
 
@@ -746,13 +749,15 @@ const response = await fetch('/api/v1/upload/single', {
             }
 
             try {
-                const result = await API_CONFIG.apiRequest(`/team-members/${id}`, {
+                const response = await API_CONFIG.apiRequest(`/team-members/${id}`, {
                     method: 'GET'
                 });
 
+                const result = await response.json();
+
                 displayResponse('getByIdResponse', {
-                    status: 200,
-                    statusText: 'OK',
+                    status: response.status,
+                    statusText: response.statusText,
                     data: result
                 });
             } catch (error) {
@@ -778,14 +783,16 @@ const response = await fetch('/api/v1/upload/single', {
             };
 
             try {
-                const result = await API_CONFIG.apiRequest(`/team-members/${id}`, {
+                const response = await API_CONFIG.apiRequest(`/team-members/${id}`, {
                     method: 'PUT',
                     body: JSON.stringify(data)
                 });
 
+                const result = await response.json();
+
                 displayResponse('updateResponse', {
-                    status: 200,
-                    statusText: 'OK',
+                    status: response.status,
+                    statusText: response.statusText,
                     data: result
                 });
             } catch (error) {
@@ -807,13 +814,15 @@ const response = await fetch('/api/v1/upload/single', {
             }
 
             try {
-                const result = await API_CONFIG.apiRequest(`/team-members/${id}`, {
+                const response = await API_CONFIG.apiRequest(`/team-members/${id}`, {
                     method: 'DELETE'
                 });
 
+                const result = await response.json();
+
                 displayResponse('deleteResponse', {
-                    status: 200,
-                    statusText: 'OK',
+                    status: response.status,
+                    statusText: response.statusText,
                     data: result
                 });
             } catch (error) {
@@ -866,7 +875,7 @@ const response = await fetch('/api/v1/upload/single', {
             console.log('API Config BASE_URL:', API_CONFIG.BASE_URL);
             
             // Set auth token if available
-            API_CONFIG.setAuthToken();
+            // API_CONFIG.setAuthToken(); // This method doesn't exist - removed
             
             // Add event listeners for all buttons
             document.getElementById('getAllMembersBtn').addEventListener('click', getAllTeamMembers);

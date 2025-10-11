@@ -108,6 +108,21 @@ window.API_CONFIG = {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         return false;
+    },
+
+    // Legacy method name for backward compatibility
+    apiRequest: async function(endpoint, options = {}) {
+        console.log('⚠️ Using deprecated apiRequest method. Please use makeRequest instead.');
+        return await this.makeRequest(endpoint, options);
+    },
+
+    // Set auth token (placeholder method for compatibility)
+    setAuthToken: function(token) {
+        if (token) {
+            localStorage.setItem('accessToken', token);
+        }
+        // This method is for compatibility - actual token setting is handled in getAuthHeaders
+        console.log('ℹ️ setAuthToken called. Tokens are automatically handled by getAuthHeaders().');
     }
 };
 

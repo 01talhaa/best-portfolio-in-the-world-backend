@@ -205,12 +205,14 @@
             margin-top: 10px;
         }
     </style>
+    <!-- Using API_CONFIG for consistency with working upload-test.html -->
+
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>📁 File Upload API Testing</h1>
-            <p>Test file upload capabilities for various content types</p>
+            <p>Test file upload capabilities - No authentication required!</p>
         </div>
         
         <div class="nav">
@@ -218,12 +220,6 @@
         </div>
         
         <div class="content">
-            <!-- Auth Token Input -->
-            <div class="token-input">
-                <label for="authToken">Authorization Token (required for protected routes):</label>
-                <input type="text" id="authToken" placeholder="Enter JWT token from login" style="margin-top: 10px;">
-            </div>
-            
             <!-- Profile Image Upload -->
             <div class="test-section">
                 <h3>Profile Image Upload</h3>
@@ -439,22 +435,167 @@
     </div>
 
     <script>
-        const BASE_URL = 'http://localhost:5000/api/v1';
-
+        
+        function getToken() {
+            return document.getElementById('token').value.trim();
+        }
+        
         function getAuthHeaders() {
-            const token = document.getElementById('authToken').value;
-            return {
-                'Authorization': `Bearer ${token}`
+            const token = getToken();
+            const headers = {
+                'Content-Type': 'application/json'
             };
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
+            return headers;
         }
 
-        // Setup upload areas
+        // Test authentication function
+        async function testAuthentication() {
+            console.log('🧪 Testing authentication...');
+            
+            // Copy token from input to localStorage if needed
+            const inputToken = document.getElementById('token').value;
+            if (inputToken && !localStorage.getItem('accessToken')) {
+                localStorage.setItem('accessToken', inputToken);
+                console.log('✅ Copied token from input to localStorage for API_CONFIG');
+            }
+            
+            try {
+                console.log('� Using API_CONFIG.makeRequest (same as upload-test.html)...');
+                const response = await API_CONFIG.makeRequest('/projects', {
+                    method: 'GET'
+                });
+                
+                const result = await response.json();
+                
+                displayResponse('authTestResponse', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    success: response.ok,
+                    message: response.ok ? '✅ Token is VALID' : '❌ Token is INVALID',
+                    data: result
+                });
+                
+                console.log('🧪 Auth test result:', {
+                    status: response.status,
+                    ok: response.ok,
+                    data: result
+                });
+                
+            } catch (error) {
+                console.error('🧪 Auth test failed:', error);
+                displayResponse('authTestResponse', {
+                    error: error.message
+                });
+            }
+        }
+
+        // Setup upload areas and button listeners
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('File upload page loaded - setting up upload areas and buttons');
+            
             const uploadTypes = ['profile', 'project', 'blog', 'service', 'document', 'general'];
             
+            // Setup upload areas
             uploadTypes.forEach(type => {
                 setupUploadArea(type);
             });
+            
+            // Setup button event listeners
+            console.log('Setting up button event listeners...');
+            
+            // Test authentication button
+            const testAuthBtn = document.getElementById('testAuthBtn');
+            if (testAuthBtn) {
+                testAuthBtn.addEventListener('click', function() {
+                    console.log('🧪 Test auth button clicked');
+                    testAuthentication();
+                });
+            }
+            
+            // Profile image upload
+            const profileUploadBtn = document.getElementById('profileUploadBtn');
+            const profileClearBtn = document.getElementById('profileClearBtn');
+            if (profileUploadBtn) {
+                profileUploadBtn.addEventListener('click', function() {
+                    console.log('Profile upload button clicked');
+                    uploadFile('profile');
+                });
+            }
+            if (profileClearBtn) {
+                profileClearBtn.addEventListener('click', () => clearUpload('profile'));
+            }
+            
+            // Project image upload
+            const projectUploadBtn = document.getElementById('projectUploadBtn');
+            const projectClearBtn = document.getElementById('projectClearBtn');
+            if (projectUploadBtn) {
+                projectUploadBtn.addEventListener('click', function() {
+                    console.log('Project upload button clicked');
+                    uploadFile('project');
+                });
+            }
+            if (projectClearBtn) {
+                projectClearBtn.addEventListener('click', () => clearUpload('project'));
+            }
+            
+            // Blog image upload
+            const blogUploadBtn = document.getElementById('blogUploadBtn');
+            const blogClearBtn = document.getElementById('blogClearBtn');
+            if (blogUploadBtn) {
+                blogUploadBtn.addEventListener('click', function() {
+                    console.log('Blog upload button clicked');
+                    uploadFile('blog');
+                });
+            }
+            if (blogClearBtn) {
+                blogClearBtn.addEventListener('click', () => clearUpload('blog'));
+            }
+            
+            // Service image upload
+            const serviceUploadBtn = document.getElementById('serviceUploadBtn');
+            const serviceClearBtn = document.getElementById('serviceClearBtn');
+            if (serviceUploadBtn) {
+                serviceUploadBtn.addEventListener('click', function() {
+                    console.log('Service upload button clicked');
+                    uploadFile('service');
+                });
+            }
+            if (serviceClearBtn) {
+                serviceClearBtn.addEventListener('click', () => clearUpload('service'));
+            }
+            
+            // Document upload
+            const documentUploadBtn = document.getElementById('documentUploadBtn');
+            const documentClearBtn = document.getElementById('documentClearBtn');
+            if (documentUploadBtn) {
+                documentUploadBtn.addEventListener('click', function() {
+                    console.log('Document upload button clicked');
+                    uploadFile('document');
+                });
+            }
+            if (documentClearBtn) {
+                documentClearBtn.addEventListener('click', () => clearUpload('document'));
+            }
+            
+            // General file upload
+            const generalUploadBtn = document.getElementById('generalUploadBtn');
+            const generalClearBtn = document.getElementById('generalClearBtn');
+            if (generalUploadBtn) {
+                generalUploadBtn.addEventListener('click', function() {
+                    console.log('General upload button clicked');
+                    uploadFile('general');
+                });
+            }
+            if (generalClearBtn) {
+                generalClearBtn.addEventListener('click', () => clearUpload('general'));
+            }
+            
+            console.log('All button event listeners have been set up');
         });
 
         function setupUploadArea(type) {
@@ -518,12 +659,13 @@
         }
 
         async function uploadFile(type) {
-            console.log('Upload function called for type:', type);
             const fileInput = document.getElementById(`${type}File`);
             const file = fileInput.files[0];
             
             if (!file) {
-                alert('Please select a file first');
+                displayResponse(`${type}Response`, {
+                    error: 'Please select a file first'
+                });
                 return;
             }
             
@@ -550,15 +692,13 @@
             showLoading(`${type}Loading`);
             
             try {
-                // Use single upload endpoint for all types
-                const response = await fetch(`${BASE_URL}/upload/single`, {
+                // Simple fetch without any authentication
+                const response = await fetch('http://localhost:5001/api/v1/upload/single', {
                     method: 'POST',
-                    headers: getAuthHeaders(),
                     body: formData
                 });
-
+                
                 const result = await response.json();
-                console.log('Upload response:', result);
                 
                 hideLoading(`${type}Loading`);
                 
@@ -574,7 +714,6 @@
                 }
                 
             } catch (error) {
-                console.error('Upload error:', error);
                 hideLoading(`${type}Loading`);
                 displayResponse(`${type}Response`, {
                     error: error.message
@@ -658,37 +797,6 @@
                 preview.style.display = 'block';
             }
         }
-        
-        // Add event listeners when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('File upload page loaded');
-            
-            // Profile image upload
-            document.getElementById('profileUploadBtn').addEventListener('click', () => uploadFile('profile'));
-            document.getElementById('profileClearBtn').addEventListener('click', () => clearUpload('profile'));
-            
-            // Project image upload
-            document.getElementById('projectUploadBtn').addEventListener('click', () => uploadFile('project'));
-            document.getElementById('projectClearBtn').addEventListener('click', () => clearUpload('project'));
-            
-            // Blog image upload
-            document.getElementById('blogUploadBtn').addEventListener('click', () => uploadFile('blog'));
-            document.getElementById('blogClearBtn').addEventListener('click', () => clearUpload('blog'));
-            
-            // Service image upload
-            document.getElementById('serviceUploadBtn').addEventListener('click', () => uploadFile('service'));
-            document.getElementById('serviceClearBtn').addEventListener('click', () => clearUpload('service'));
-            
-            // Document upload
-            document.getElementById('documentUploadBtn').addEventListener('click', () => uploadFile('document'));
-            document.getElementById('documentClearBtn').addEventListener('click', () => clearUpload('document'));
-            
-            // General file upload
-            document.getElementById('generalUploadBtn').addEventListener('click', () => uploadFile('general'));
-            document.getElementById('generalClearBtn').addEventListener('click', () => clearUpload('general'));
-            
-            console.log('File upload event listeners added');
-        });
     </script>
 </body>
 </html>

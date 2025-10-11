@@ -220,6 +220,7 @@
             100% { transform: rotate(360deg); }
         }
     </style>
+    <script src="js/api-config.js"></script>
 </head>
 <body>
     <div class="container">
@@ -334,7 +335,8 @@
     </div>
 
     <script>
-        const BASE_URL = 'http://localhost:5000/api/v1';
+        // Remove hardcoded BASE_URL - use API_CONFIG instead
+        // const BASE_URL = 'http://localhost:5000/api/v1';
         let chatHistory = [];
 
         function getAuthHeaders() {
@@ -362,9 +364,8 @@
             showLoading('chatLoading');
             
             try {
-                const response = await fetch(`${BASE_URL}/ai${endpoint}`, {
+                const response = await API_CONFIG.makeRequest(`/ai${endpoint}`, {
                     method: 'POST',
-                    headers: getAuthHeaders(),
                     body: JSON.stringify(data)
                 });
 
@@ -429,9 +430,8 @@
             showLoading('assistantLoading');
             
             try {
-                const response = await fetch(`${BASE_URL}/ai/assistant`, {
+                const response = await API_CONFIG.makeRequest('/ai/assistant', {
                     method: 'POST',
-                    headers: getAuthHeaders(),
                     body: JSON.stringify(data)
                 });
 
@@ -455,8 +455,8 @@
 
         async function checkAIHealth() {
             try {
-                const response = await fetch(`${BASE_URL}/ai/health`, {
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.makeRequest('/ai/health', {
+                    method: 'GET'
                 });
 
                 const result = await response.json();

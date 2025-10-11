@@ -100,6 +100,7 @@
             margin: 15px 0;
         }
     </style>
+    <script src="js/api-config.js"></script>
 </head>
 <body>
     <div class="container">
@@ -112,7 +113,7 @@
                 <label for="token">JWT Token:</label>
                 <input type="text" id="token" placeholder="Enter your JWT token here">
             </div>
-            <button class="btn" onclick="testAuth()">Test Authentication</button>
+            <button class="btn" id="testAuthBtn">Test Authentication</button>
             <div id="authResponse" class="response-area"></div>
         </div>
         
@@ -161,8 +162,8 @@
                 <input type="text" id="description" placeholder="Brief description of this upload">
             </div>
             
-            <button class="btn" onclick="uploadFile()">Upload File</button>
-            <button class="btn" onclick="clearForm()">Clear Form</button>
+            <button class="btn" id="uploadFileBtn">Upload File</button>
+            <button class="btn" id="clearFormBtn">Clear Form</button>
             
             <div id="uploadResponse" class="response-area"></div>
         </div>
@@ -183,7 +184,8 @@
 
     <script>
             
-        const BASE_URL = 'https://best-portfolio-in-the-world-backend.onrender.com/api/v1';
+        // Remove hardcoded BASE_URL - use API_CONFIG instead
+        // const BASE_URL = 'https://best-portfolio-in-the-world-backend.onrender.com/api/v1';
         let uploadedFiles = [];
         
         function getToken() {
@@ -214,22 +216,38 @@
             }
             
             try {
-                const response = await fetch(`${BASE_URL}/auth/me`, {
-                    method: 'GET',
-                    headers: getAuthHeaders()
+                // Test authentication by making a simple GET request to a protected endpoint
+                // Since there's no /auth/me endpoint, we'll test with projects endpoint
+                const response = await API_CONFIG.makeRequest('/projects', {
+                    method: 'GET'
                 });
                 
                 const result = await response.json();
                 
-                showResponse('authResponse', {
-                    status: response.status,
-                    statusText: response.statusText,
-                    data: result
-                });
+                if (response.ok) {
+                    showResponse('authResponse', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        message: '✅ Authentication successful! Token is valid.',
+                        data: {
+                            success: true,
+                            message: 'Token verified successfully',
+                            projectsCount: result.data ? result.data.length : 0
+                        }
+                    });
+                } else {
+                    showResponse('authResponse', {
+                        status: response.status,
+                        statusText: response.statusText,
+                        message: '❌ Authentication failed! Token is invalid or expired.',
+                        data: result
+                    });
+                }
                 
             } catch (error) {
                 showResponse('authResponse', {
-                    error: error.message
+                    error: error.message,
+                    message: '❌ Authentication test failed!'
                 });
             }
         }
@@ -279,11 +297,8 @@
             }
             
             try {
-                const response = await fetch(`${BASE_URL}/upload/single`, {
+                const response = await API_CONFIG.makeRequest('/upload/single', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
                     body: formData
                 });
                 
@@ -335,6 +350,40 @@
             } else {
                 entityIdInput.value = '';
             }
+        });
+
+        // Setup button event listeners when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Upload test page loaded - setting up button event listeners');
+            
+            // Test auth button
+            const testAuthBtn = document.getElementById('testAuthBtn');
+            if (testAuthBtn) {
+                testAuthBtn.addEventListener('click', function() {
+                    console.log('Test auth button clicked');
+                    testAuth();
+                });
+            }
+            
+            // Upload file button
+            const uploadFileBtn = document.getElementById('uploadFileBtn');
+            if (uploadFileBtn) {
+                uploadFileBtn.addEventListener('click', function() {
+                    console.log('Upload file button clicked');
+                    uploadFile();
+                });
+            }
+            
+            // Clear form button
+            const clearFormBtn = document.getElementById('clearFormBtn');
+            if (clearFormBtn) {
+                clearFormBtn.addEventListener('click', function() {
+                    console.log('Clear form button clicked');
+                    clearForm();
+                });
+            }
+            
+            console.log('All button event listeners set up successfully');
         });
     </script>
 </body>

@@ -164,6 +164,7 @@
             gap: 10px;
         }
     </style>
+    <script src="js/api-config.js"></script>
 </head>
 <body>
     <div class="container">
@@ -804,7 +805,8 @@ await fetch('/api/v1/upload/multiple', {
     </div>
 
     <script>
-        const BASE_URL = 'https://best-portfolio-in-the-world-backend.onrender.com/api/v1';
+        // Remove hardcoded BASE_URL - use API_CONFIG instead
+        // const BASE_URL = 'https://best-portfolio-in-the-world-backend.onrender.com/api/v1';
 
         function getAuthHeaders() {
             const token = document.getElementById('authToken').value;
@@ -816,8 +818,8 @@ await fetch('/api/v1/upload/multiple', {
 
         async function getAllServices() {
             try {
-                const response = await fetch(`${BASE_URL}/services`, {
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.makeRequest('/services', {
+                    method: 'GET'
                 });
 
                 const result = await response.json();
@@ -843,9 +845,8 @@ await fetch('/api/v1/upload/multiple', {
             };
 
             try {
-                const response = await fetch(`${BASE_URL}/services`, {
+                const response = await API_CONFIG.makeRequest('/services', {
                     method: 'POST',
-                    headers: getAuthHeaders(),
                     body: JSON.stringify(data)
                 });
 
@@ -873,8 +874,8 @@ await fetch('/api/v1/upload/multiple', {
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/services/${id}`, {
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.makeRequest(`/services/${id}`, {
+                    method: 'GET'
                 });
 
                 const result = await response.json();
@@ -905,9 +906,8 @@ await fetch('/api/v1/upload/multiple', {
             };
 
             try {
-                const response = await fetch(`${BASE_URL}/services/${id}`, {
+                const response = await API_CONFIG.makeRequest(`/services/${id}`, {
                     method: 'PUT',
-                    headers: getAuthHeaders(),
                     body: JSON.stringify(data)
                 });
 
@@ -928,8 +928,8 @@ await fetch('/api/v1/upload/multiple', {
             const category = document.getElementById('categoryFilter').value;
 
             try {
-                const response = await fetch(`${BASE_URL}/services/category/${encodeURIComponent(category)}`, {
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.makeRequest(`/services/category/${encodeURIComponent(category)}`, {
+                    method: 'GET'
                 });
 
                 const result = await response.json();
@@ -947,8 +947,8 @@ await fetch('/api/v1/upload/multiple', {
 
         async function getFeaturedServices() {
             try {
-                const response = await fetch(`${BASE_URL}/services/featured`, {
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.makeRequest('/services/featured', {
+                    method: 'GET'
                 });
 
                 const result = await response.json();
@@ -976,9 +976,8 @@ await fetch('/api/v1/upload/multiple', {
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/services/${id}`, {
-                    method: 'DELETE',
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.makeRequest(`/services/${id}`, {
+                    method: 'DELETE'
                 });
 
                 const result = await response.json();

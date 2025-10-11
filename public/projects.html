@@ -750,15 +750,16 @@ const response = await fetch('/api/v1/upload/single', {
             try {
                 console.log('Making request to:', `${API_CONFIG.BASE_URL}/projects`);
                 
-                const result = await API_CONFIG.apiRequest('/projects', {
+                const response = await API_CONFIG.apiRequest('/projects', {
                     method: 'GET'
                 });
                 
+                const result = await response.json();
                 console.log('Response data:', result);
                 
                 displayResponse('getAllResponse', {
-                    status: 200,
-                    statusText: 'OK',
+                    status: response.status,
+                    statusText: response.statusText,
                     data: result
                 });
             } catch (error) {
@@ -790,14 +791,16 @@ const response = await fetch('/api/v1/upload/single', {
             };
 
             try {
-                const result = await API_CONFIG.apiRequest('/projects', {
+                const response = await API_CONFIG.apiRequest('/projects', {
                     method: 'POST',
                     body: JSON.stringify(data)
                 });
 
+                const result = await response.json();
+
                 displayResponse('createResponse', {
-                    status: 201,
-                    statusText: 'Created',
+                    status: response.status,
+                    statusText: response.statusText,
                     data: result
                 });
 
@@ -822,8 +825,8 @@ const response = await fetch('/api/v1/upload/single', {
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/projects/${id}`, {
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.apiRequest(`/projects/${id}`, {
+                    method: 'GET'
                 });
 
                 const result = await response.json();
@@ -854,9 +857,8 @@ const response = await fetch('/api/v1/upload/single', {
             };
 
             try {
-                const response = await fetch(`${BASE_URL}/projects/${id}`, {
+                const response = await API_CONFIG.apiRequest(`/projects/${id}`, {
                     method: 'PUT',
-                    headers: getAuthHeaders(),
                     body: JSON.stringify(data)
                 });
 
@@ -877,8 +879,8 @@ const response = await fetch('/api/v1/upload/single', {
             const category = document.getElementById('categoryFilter').value;
 
             try {
-                const response = await fetch(`${BASE_URL}/projects/category/${encodeURIComponent(category)}`, {
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.apiRequest(`/projects/category/${encodeURIComponent(category)}`, {
+                    method: 'GET'
                 });
 
                 const result = await response.json();
@@ -896,8 +898,8 @@ const response = await fetch('/api/v1/upload/single', {
 
         async function getFeaturedProjects() {
             try {
-                const response = await fetch(`${BASE_URL}/projects/featured`, {
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.apiRequest('/projects/featured', {
+                    method: 'GET'
                 });
 
                 const result = await response.json();
@@ -925,9 +927,8 @@ const response = await fetch('/api/v1/upload/single', {
             }
 
             try {
-                const response = await fetch(`${BASE_URL}/projects/${id}`, {
-                    method: 'DELETE',
-                    headers: getAuthHeaders()
+                const response = await API_CONFIG.apiRequest(`/projects/${id}`, {
+                    method: 'DELETE'
                 });
 
                 const result = await response.json();
